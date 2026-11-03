@@ -8,6 +8,15 @@ import { Input } from "@/components/ui/input";
 import { SeverityBadge } from "@/components/badges";
 import { Binoculars, Trash } from "@phosphor-icons/react";
 
+const ECOSYSTEMS: Array<[string, string]> = [
+  ["NPM", "npm"],
+  ["PYPI", "PyPI"],
+  ["GO", "Go"],
+  ["CARGO", "crates.io"],
+  ["RUBYGEMS", "RubyGems"],
+  ["COMPOSER", "Packagist"],
+];
+
 interface WatchItem {
   id: string;
   packageName: string;
@@ -24,6 +33,7 @@ export function WatchlistClient() {
   const [items, setItems] = useState<WatchItem[]>([]);
   const [related, setRelated] = useState<RelatedIncident[]>([]);
   const [packageName, setPackageName] = useState("");
+  const [ecosystem, setEcosystem] = useState("NPM");
   const [loading, setLoading] = useState(true);
 
   const load = () => {
@@ -45,7 +55,7 @@ export function WatchlistClient() {
     const res = await fetch("/api/watchlist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ packageName: packageName.trim(), ecosystem: "NPM" }),
+      body: JSON.stringify({ packageName: packageName.trim(), ecosystem }),
     });
     if (res.ok) {
       toast.success("Package added to watchlist");
@@ -73,7 +83,19 @@ export function WatchlistClient() {
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">Watched packages</h2>
         <div className="flex gap-2">
+          <label htmlFor="watch-eco" className="sr-only">Ecosystem</label>
+          <select
+            id="watch-eco"
+            value={ecosystem}
+            onChange={(e) => setEcosystem(e.target.value)}
+            className="h-10 rounded-md border border-input bg-background px-2 text-sm"
+          >
+            {ECOSYSTEMS.map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
+          </select>
           <Input
+            aria-label="Package name"
             placeholder="e.g. lodash"
             value={packageName}
             onChange={(e) => setPackageName(e.target.value)}
@@ -85,7 +107,9 @@ export function WatchlistClient() {
           <div className="rounded-2xl border border-border bg-card p-8 text-center">
             <Binoculars className="mx-auto h-8 w-8 text-muted-foreground" weight="bold" />
             <p className="mt-3 text-sm text-muted-foreground">
-              Add packages you want to monitor for new incidents.
+              Add packages you want to monitor. You&apos;ll get an email when a new CVE or malicious release is
+              published. Or add your AI tools from{" "}
+              <Link href="/tools" className="underline underline-offset-4">Tool Watch</Link>.
             </p>
           </div>
         ) : (
@@ -95,7 +119,12 @@ export function WatchlistClient() {
                 key={item.id}
                 className="flex items-center justify-between rounded-xl border border-border/60 bg-card px-4 py-3"
               >
-                <span className="font-mono text-sm">{item.packageName}</span>
+                <span className="font-mono text-sm">
+                  {item.packageName}
+                  {item.ecosystem && item.ecosystem !== "NPM" && (
+                    <span className="ml-2 text-xs text-muted-foreground">{item.ecosystem}</span>
+                  )}
+                </span>
                 <Button
                   variant="ghost"
                   size="icon"

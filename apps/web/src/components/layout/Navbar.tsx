@@ -19,6 +19,8 @@ import { useCommand } from "@/components/command/command-context";
 import type { Session } from "next-auth";
 
 const navLinks = [
+  { href: "/tools", label: "Tool Watch" },
+  { href: "/mcp", label: "MCP check" },
   { href: "/incidents", label: "Incidents" },
   { href: "/scan", label: "Scan" },
   { href: "/learn", label: "Learn" },

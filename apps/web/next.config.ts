@@ -39,6 +39,7 @@ const nextConfig: NextConfig = {
     "@iamcooked/ui",
     "@iamcooked/db",
     "@iamcooked/ai",
+    "@iamcooked/core",
     "@iamcooked/scanner",
     "@iamcooked/sources",
     "@iamcooked/validators",

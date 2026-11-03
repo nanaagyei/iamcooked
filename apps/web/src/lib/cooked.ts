@@ -1,48 +1,6 @@
-export type CookedVerdict = {
-  label: string;
-  blurb: string;
-  tone: "safe" | "low" | "medium" | "high" | "critical";
-};
-
-/**
- * Maps a 0-100 workspace risk score to a playful "am I cooked?" verdict.
- * The real score still drives everything underneath.
- */
-export function getCookedVerdict(score: number): CookedVerdict {
-  if (score >= 80) {
-    return {
-      label: "Burnt to a crisp",
-      blurb: "Reachable critical issues in your stack. Fix these before anything else.",
-      tone: "critical",
-    };
-  }
-  if (score >= 55) {
-    return {
-      label: "Well done",
-      blurb: "Some serious findings are live. Worth a focused afternoon of patching.",
-      tone: "high",
-    };
-  }
-  if (score >= 30) {
-    return {
-      label: "Getting toasty",
-      blurb: "A few things to clean up, none of them on fire. You've got time.",
-      tone: "medium",
-    };
-  }
-  if (score > 0) {
-    return {
-      label: "Lightly toasted",
-      blurb: "Minor stuff only. Knock it out whenever you touch the deps next.",
-      tone: "low",
-    };
-  }
-  return {
-    label: "Not cooked",
-    blurb: "Nothing risky in what we can see. Keep shipping.",
-    tone: "safe",
-  };
-}
+// The verdict copy lives in @iamcooked/core so the CLI and web app say the same thing.
+import type { CookedVerdict } from "@iamcooked/core";
+export { getCookedVerdict, type CookedVerdict } from "@iamcooked/core";
 
 export const cookedToneStyles: Record<CookedVerdict["tone"], string> = {
   safe: "bg-severity-safe/15 text-severity-safe border-severity-safe/30",

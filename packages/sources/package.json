@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@iamcooked/ai": "workspace:*",
+    "@iamcooked/core": "workspace:*",
     "@iamcooked/db": "workspace:*",
     "@iamcooked/validators": "workspace:*",
     "resend": "^4.1.0"

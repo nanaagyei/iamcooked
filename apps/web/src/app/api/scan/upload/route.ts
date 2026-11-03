@@ -5,7 +5,7 @@ import { apiError, apiSuccess } from "@/lib/api-error";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { processLockfileScan } from "@/lib/scan-processor";
 import { createOpaqueToken } from "@/lib/tokens";
-import { parseLockfile, detectLockfileType } from "@iamcooked/scanner";
+import { parseLockfile, detectLockfileType, isMcpConfig, SUPPORTED_LOCKFILES } from "@iamcooked/scanner";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const SCAN_RATE_LIMIT = 10;
@@ -47,9 +47,16 @@ export async function POST(request: Request) {
 
   const lockfileType = detectLockfileType(file.name);
   if (!lockfileType) {
+    if (/mcp|claude_desktop_config|settings/i.test(file.name) && file.name.endsWith(".json")) {
+      return apiError(
+        "MCP_CONFIG",
+        "That looks like an MCP config. Use the MCP checker at /mcp — it checks configs in your browser so secrets never leave your machine.",
+        400,
+      );
+    }
     return apiError(
       "UNSUPPORTED_FORMAT",
-      `Unsupported file "${file.name}". Upload package-lock.json, pnpm-lock.yaml, or yarn.lock.`,
+      `Unsupported file "${file.name}". Upload one of: ${SUPPORTED_LOCKFILES.map((l) => l.name).join(", ")}.`,
       400,
     );
   }
@@ -59,6 +66,10 @@ export async function POST(request: Request) {
     content = await file.text();
   } catch {
     return apiError("READ_ERROR", "Failed to read the uploaded file.", 500);
+  }
+
+  if (file.name.endsWith(".json") && isMcpConfig(content)) {
+    return apiError("MCP_CONFIG", "That looks like an MCP config. Use the MCP checker at /mcp instead.", 400);
   }
 
   const parseResult = parseLockfile(file.name, content);
@@ -78,7 +89,7 @@ export async function POST(request: Request) {
   }
 
   const deps = parseResult.dependencies;
-  const ecosystem = deps[0]?.ecosystem ?? "NPM";
+  const ecosystem = parseResult.ecosystem;
 
   let processed;
   try {
@@ -100,10 +111,12 @@ export async function POST(request: Request) {
       userId,
       accessToken: createOpaqueToken(),
       uploadFileName: file.name,
-      ecosystem: ecosystem as "NPM",
+      ecosystem,
       riskScore: processed.riskScore,
       riskLevel: processed.riskLevel,
-      summary: `${processed.dependencyCount} dependencies scanned. Found ${processed.findings.length} findings.`,
+      summary:
+        `${processed.dependencyCount} dependencies scanned. Found ${processed.findings.length} findings.` +
+        (processed.uncheckedCount > 0 ? ` ${processed.uncheckedCount} unpinned dependencies could not be checked.` : ""),
       findings: {
         create: processed.findings.map((f) => ({
           packageName: f.packageName,
@@ -114,6 +127,8 @@ export async function POST(request: Request) {
           explanation: sanitizeStoredText(f.explanation),
           incidentId: f.incidentId,
           advisoryId: f.advisoryId,
+          cveId: f.cveId,
+          fixedVersion: f.fixedVersion,
           actionItems: f.actionItems as object | undefined,
         })),
       },

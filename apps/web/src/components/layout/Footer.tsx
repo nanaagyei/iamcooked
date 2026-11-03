@@ -5,6 +5,8 @@ import { Shield } from "@phosphor-icons/react/dist/ssr";
 
 const footerLinks = {
   Product: [
+    { href: "/tools", label: "Tool Watch" },
+    { href: "/mcp", label: "MCP check" },
     { href: "/incidents", label: "Incidents" },
     { href: "/scan", label: "Scan project" },
     { href: "/dashboard", label: "Dashboard" },

@@ -11,6 +11,7 @@ import { usePrefersReducedMotion } from "@/components/hooks/use-prefers-reduced-
 import { SectionContainer } from "@/components/layout";
 import { PageBackdrop } from "@/components/layout/PageBackdrop";
 import { ProductPreview } from "./ProductPreview";
+import { CopyCommand } from "@/components/check/CopyCommand";
 
 export function HomeHero() {
   const heroRef = useRef<HTMLElement>(null);
@@ -81,14 +82,18 @@ export function HomeHero() {
               </Link>
             </MagneticButton>
             <Button variant="contrast" size="lg" className="h-12 px-6" asChild>
-              <Link href="/incidents">
-                See the latest drama
+              <Link href="/tools">
+                Are my AI tools in a CVE?
                 <ArrowRight className="h-4 w-4" weight="bold" aria-hidden />
               </Link>
             </Button>
           </div>
+          <div className="mt-6 max-w-sm">
+            <p className="mb-2 text-xs text-muted-foreground">Or straight from your terminal. No signup:</p>
+            <CopyCommand command="npx iamcooked" />
+          </div>
           <p className="mt-6 font-mono text-xs text-muted-foreground/80">
-            OSV · GitHub Advisories · CISA KEV — every verdict is source-backed, never vibes
+            OSV · GitHub Advisories · CISA KEV · OpenSSF malware feed. Every verdict is source-backed, never vibes
           </p>
         </div>
 

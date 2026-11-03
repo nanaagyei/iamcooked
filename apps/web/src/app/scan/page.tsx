@@ -22,8 +22,9 @@ export default function ScanPage() {
               Scan your project
             </h1>
             <p className="mt-4 max-w-[60ch] leading-relaxed text-muted-foreground">
-              Upload your lockfile to check dependencies against OSV, CISA KEV,
-              and curated incident reports. Processed in memory, never stored.
+              Upload a lockfile from npm, pnpm, Yarn, Bun, pip, Poetry, uv, Go, Cargo, Bundler or
+              Composer. We check every package against OSV, CISA KEV and curated incident reports.
+              The file is processed in memory and never stored.
             </p>
           </div>
         </SectionContainer>

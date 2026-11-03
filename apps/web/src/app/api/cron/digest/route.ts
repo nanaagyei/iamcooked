@@ -1,5 +1,5 @@
 import { cronDigestQuerySchema } from "@iamcooked/validators";
-import { sendWeeklyDigest, sendCriticalAlerts } from "@iamcooked/sources";
+import { sendWeeklyDigest, sendCriticalAlerts, sendWatchlistAdvisoryAlerts } from "@iamcooked/sources";
 import { apiError, apiSuccess, validationError } from "@/lib/api-error";
 
 export async function GET(request: Request) {
@@ -17,6 +17,10 @@ export async function GET(request: Request) {
   }
 
   try {
+    if (parsed.data.type === "advisories") {
+      const result = await sendWatchlistAdvisoryAlerts();
+      return apiSuccess({ success: true, ...result });
+    }
     if (parsed.data.type === "critical") {
       const result = await sendCriticalAlerts();
       return apiSuccess({ success: true, ...result });

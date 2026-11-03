@@ -71,7 +71,7 @@ export interface AnalyzeOptions {
   onProgress?: (stage: "query" | "hydrate" | "done", detail: { total: number }) => void;
 }
 
-function pickSeverity(record: OsvRecord): { severity: SeverityLevel; score: number | null } {
+export function recordSeverity(record: OsvRecord): { severity: SeverityLevel; score: number | null } {
   const vectors = [...(record.severity ?? []), ...(record.affected ?? []).flatMap((a) => a.severity ?? [])];
   let best: number | null = null;
   for (const s of vectors) {
@@ -213,7 +213,7 @@ export async function analyzeDependencies(deps: DependencyInput[], opts: Analyze
   const severityById = new Map<string, { severity: SeverityLevel; score: number | null }>();
   const needAlias = new Map<string, string>();
   for (const rec of records.values()) {
-    const s = pickSeverity(rec);
+    const s = recordSeverity(rec);
     severityById.set(rec.id, s);
     if (s.severity === "UNKNOWN" && !rec.id.startsWith("MAL-")) {
       const alias =
@@ -227,7 +227,7 @@ export async function analyzeDependencies(deps: DependencyInput[], opts: Analyze
       for (const [id, alias] of needAlias) {
         const aliasRec = aliasRecords.get(alias);
         if (aliasRec) {
-          const s = pickSeverity(aliasRec);
+          const s = recordSeverity(aliasRec);
           if (s.severity !== "UNKNOWN") severityById.set(id, s);
         }
       }
@@ -251,12 +251,12 @@ export async function analyzeDependencies(deps: DependencyInput[], opts: Analyze
       allIdsForRec.forEach((x) => seenAliases.add(x));
 
       const malware = isMalware(rec);
-      const { severity, score } = severityById.get(rec.id) ?? pickSeverity(rec);
+      const { severity, score } = severityById.get(rec.id) ?? recordSeverity(rec);
       const cve = allIdsForRec.find((a) => a.startsWith("CVE-")) ?? null;
       const inKev = cve && opts.isKev ? await opts.isKev(cve) : false;
       const fixedVersion = malware ? null : selectFixedVersion(rec, dep.ecosystem, dep.name, dep.version!);
       const primaryFile = [...dep.sourceFiles][0];
-      const plan = buildFixPlan({
+      let plan = buildFixPlan({
         ecosystem: dep.ecosystem,
         name: dep.name,
         fixedVersion,
@@ -264,6 +264,15 @@ export async function analyzeDependencies(deps: DependencyInput[], opts: Analyze
         sourceFile: primaryFile,
         malicious: malware,
       });
+      // Launched by an MCP server (npx/uvx): the fix is editing the config, not installing.
+      if (dep.via.size > 0 && dep.sourceFiles.size === [...dep.sourceFiles].filter((f) => !/lock|requirements|go\.mod/i.test(f)).length) {
+        const sep = dep.ecosystem === "PYPI" ? "==" : "@";
+        plan = malware
+          ? { command: null, instruction: `Remove the MCP server that runs ${dep.name} from your config and rotate any keys it had access to.` }
+          : fixedVersion
+            ? { command: null, instruction: `In your MCP config, change "${dep.name}${sep}${dep.version}" to "${dep.name}${sep}${fixedVersion}" (or newer) and restart your editor.` }
+            : plan;
+      }
       const riskSeverity = severity === "UNKNOWN" ? "MEDIUM" : severity;
 
       findings.push({
