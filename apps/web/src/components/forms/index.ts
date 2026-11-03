@@ -1,0 +1,1 @@
+export { NewsletterCapture } from "./NewsletterCapture";

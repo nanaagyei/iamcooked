@@ -1,0 +1,221 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-background-dark: #0b0a09;
+  --color-background-light: #faf7f3;
+  --color-surface-dark: #141210;
+  --color-surface-dark-elevated: #1b1815;
+  --color-surface-light: #fffdfa;
+  --color-border-dark: #2a2622;
+  --color-border-light: #e6e0d8;
+  --color-text-primary-dark: #f2ede7;
+  --color-text-secondary-dark: #a39a8f;
+  --color-text-primary-light: #1a1714;
+  --color-text-secondary-light: #6b6258;
+  --color-severity-critical: #e5484d;
+  --color-severity-high: #f59e0b;
+  --color-severity-medium: #eab308;
+  --color-severity-low: #60a5fa;
+  --color-severity-info: #8b8378;
+  --color-severity-safe: #9ecb3d;
+  --color-contrast: var(--contrast);
+  --color-contrast-foreground: var(--contrast-foreground);
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+:root {
+  --background: #faf7f3;
+  --foreground: #1a1714;
+  --card: #fffdfa;
+  --card-foreground: #1a1714;
+  --popover: #ffffff;
+  --popover-foreground: #1a1714;
+  --primary: #e25e2b;
+  --primary-foreground: #fffdfa;
+  --secondary: #f0ebe4;
+  --secondary-foreground: #1a1714;
+  --muted: #f0ebe4;
+  --muted-foreground: #6b6258;
+  --accent: #f0ebe4;
+  --accent-foreground: #1a1714;
+  --destructive: #e5484d;
+  --destructive-foreground: #ffffff;
+  --border: #e6e0d8;
+  --input: #e6e0d8;
+  --ring: #e25e2b;
+  --radius: 0.75rem;
+  --surface-elevated: #ffffff;
+  --shadow-diffusion: 0 20px 40px -15px rgba(40, 20, 8, 0.06);
+  --contrast: #1a1714;
+  --contrast-foreground: #faf7f3;
+}
+
+.dark {
+  --background: #0b0a09;
+  --foreground: #f2ede7;
+  --card: #141210;
+  --card-foreground: #f2ede7;
+  --popover: #1b1815;
+  --popover-foreground: #f2ede7;
+  --primary: #f9743b;
+  --primary-foreground: #1a0f08;
+  --secondary: #1b1815;
+  --secondary-foreground: #f2ede7;
+  --muted: #1b1815;
+  --muted-foreground: #a39a8f;
+  --accent: #1b1815;
+  --accent-foreground: #f2ede7;
+  --destructive: #e5484d;
+  --destructive-foreground: #f2ede7;
+  --border: #2a2622;
+  --input: #2a2622;
+  --ring: #f9743b;
+  --surface-elevated: #1b1815;
+  --shadow-diffusion: 0 20px 40px -15px rgba(0, 0, 0, 0.45);
+  --contrast: #f2ede7;
+  --contrast-foreground: #0b0a09;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html.theme-transition,
+    html.theme-transition * {
+      transition-property: background-color, border-color, color, fill, stroke;
+      transition-duration: 200ms;
+      transition-timing-function: ease-out;
+    }
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+}
+
+@layer base {
+  :where(.prose, .rich-text) a {
+    color: var(--primary);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--primary) 45%, transparent);
+    text-underline-offset: 0.2em;
+    transition: color 200ms ease-out, text-decoration-color 200ms ease-out;
+  }
+
+  :where(.prose, .rich-text) a:hover {
+    text-decoration-color: var(--primary);
+  }
+
+  :where(button, [role="button"], a, input, select, textarea):focus-visible {
+    outline: none;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Infinite right-to-left logo carousel. The track holds two identical
+   groups; translating it -50% loops seamlessly. */
+.animate-marquee {
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+  will-change: transform;
+}
+
+.marquee-group:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-marquee {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+@media print {
+  nav,
+  footer,
+  button,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}

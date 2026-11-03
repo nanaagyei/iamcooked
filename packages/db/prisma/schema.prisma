@@ -1,0 +1,456 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String                   @id @default(cuid())
+  name          String?
+  email         String                   @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole                 @default(USER)
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+  projects      Project[]
+  subscriptions NewsletterSubscription[]
+  scans         ScanReport[]
+  watchedPackages WatchedPackage[]
+  accounts      Account[]
+  sessions      Session[]
+  agentSessions AgentSession[]
+  fixTasks      FixTask[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Project {
+  id           String               @id @default(cuid())
+  userId       String?
+  name         String
+  ecosystem    Ecosystem
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  user         User?                @relation(fields: [userId], references: [id])
+  dependencies ProjectDependency[]
+  scans        ScanReport[]
+  agentSessions AgentSession[]
+}
+
+model ProjectDependency {
+  id          String   @id @default(cuid())
+  projectId   String
+  packageName String
+  version     String?
+  ecosystem   Ecosystem
+  direct      Boolean  @default(false)
+  sourceFile  String?
+  createdAt   DateTime @default(now())
+  project     Project  @relation(fields: [projectId], references: [id])
+
+  @@index([packageName, ecosystem])
+}
+
+model Incident {
+  id                 String          @id @default(cuid())
+  slug               String          @unique
+  title              String
+  shortTitle         String?
+  severity           Severity
+  confidence         Confidence
+  status             IncidentStatus
+  ecosystem          Ecosystem?
+  incidentType       IncidentType
+  beginnerTldr       String?
+  technicalSummary   String?
+  founderImpact      String?
+  recommendedActions Json?
+  affectedPackages   Json?
+  timeline           Json?
+  publishedAt        DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  sources            IncidentSource[]
+  packages           IncidentPackage[]
+  findings           ScanFinding[]
+  aiGenerations      AiGeneration[]
+}
+
+model IncidentSource {
+  id         String   @id @default(cuid())
+  incidentId String
+  sourceId   String
+  claimScope String?
+  createdAt  DateTime @default(now())
+  incident   Incident @relation(fields: [incidentId], references: [id])
+  source     Source   @relation(fields: [sourceId], references: [id])
+}
+
+model Source {
+  id             String           @id @default(cuid())
+  name           String
+  url            String
+  sourceType     SourceType
+  trustTier      Int
+  title          String?
+  excerpt        String?
+  rawContentHash String?
+  publishedAt    DateTime?
+  fetchedAt      DateTime         @default(now())
+  incidents      IncidentSource[]
+}
+
+model Advisory {
+  id              String         @id @default(cuid())
+  externalId      String         @unique
+  source          AdvisorySource
+  packageName     String?
+  ecosystem       Ecosystem?
+  severity        Severity?
+  cvssScore       Float?
+  summary         String?
+  details         String?
+  affectedRanges  Json?
+  patchedVersions Json?
+  references      Json?
+  publishedAt     DateTime?
+  modifiedAt      DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  findings        ScanFinding[]
+}
+
+model IncidentPackage {
+  id              String   @id @default(cuid())
+  incidentId      String
+  packageName     String
+  ecosystem       Ecosystem
+  affectedVersions Json?
+  patchedVersions  Json?
+  notes           String?
+  incident        Incident @relation(fields: [incidentId], references: [id])
+
+  @@index([packageName, ecosystem])
+}
+
+model ScanReport {
+  id                     String         @id @default(cuid())
+  accessToken            String         @unique @default(cuid())
+  userId                 String?
+  projectId              String?
+  uploadFileName         String?
+  ecosystem              Ecosystem
+  riskScore              Int
+  riskLevel              RiskLevel
+  summary                String?
+  remediationPlan        Json?
+  remediationGeneratedAt DateTime?
+  createdAt              DateTime       @default(now())
+  user                   User?          @relation(fields: [userId], references: [id])
+  project                Project?       @relation(fields: [projectId], references: [id])
+  findings               ScanFinding[]
+  aiGenerations          AiGeneration[]
+}
+
+model ScanFinding {
+  id               String       @id @default(cuid())
+  scanReportId     String
+  advisoryId       String?
+  incidentId       String?
+  packageName      String
+  installedVersion String?
+  findingType      FindingType
+  severity         Severity
+  confidence       Confidence
+  explanation      String
+  actionItems      Json?
+  reachable        Boolean?
+  status           TriageStatus @default(OPEN)
+  cveId            String?
+  fixedVersion     String?
+  createdAt        DateTime     @default(now())
+  scanReport       ScanReport   @relation(fields: [scanReportId], references: [id])
+  advisory         Advisory?    @relation(fields: [advisoryId], references: [id])
+  incident         Incident?    @relation(fields: [incidentId], references: [id])
+  fixTasks         FixTask[]
+
+  @@index([scanReportId])
+  @@index([packageName])
+}
+
+model WatchedPackage {
+  id          String    @id @default(cuid())
+  userId      String
+  packageName String
+  ecosystem   Ecosystem
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, packageName, ecosystem])
+  @@index([userId])
+}
+
+model NewsletterSubscription {
+  id               String           @id @default(cuid())
+  userId           String?
+  email            String           @unique
+  interests        Json?
+  frequency        DigestFrequency  @default(WEEKLY)
+  unsubscribeToken String           @unique @default(cuid())
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  user      User?            @relation(fields: [userId], references: [id])
+}
+
+model AgentSession {
+  id                String                  @id @default(cuid())
+  userId            String?
+  projectId         String?
+  vendor            AgentVendor
+  sessionName       String
+  sourceType        AgentSourceType
+  sourceRef         String?
+  depCount          Int                     @default(0)
+  vulnCount         Int                     @default(0)
+  lastSeenAt        DateTime                @default(now())
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  user              User?                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project           Project?                @relation(fields: [projectId], references: [id])
+  installedPackages AgentInstalledPackage[]
+
+  @@index([userId])
+  @@index([vendor])
+  @@index([lastSeenAt])
+}
+
+model AgentInstalledPackage {
+  id          String       @id @default(cuid())
+  sessionId   String
+  packageName String
+  version     String?
+  ecosystem   Ecosystem    @default(NPM)
+  reviewed    Boolean      @default(false)
+  severity    Severity?
+  createdAt   DateTime     @default(now())
+  session     AgentSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([packageName, ecosystem])
+}
+
+model FixTask {
+  id          String       @id @default(cuid())
+  userId      String?
+  findingId   String?
+  title       String
+  status      TriageStatus @default(OPEN)
+  provider    TaskProvider @default(INTERNAL)
+  externalRef String?
+  packageName String?
+  fromVersion String?
+  toVersion   String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  user        User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  finding     ScanFinding? @relation(fields: [findingId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum Ecosystem {
+  NPM
+  PYPI
+  GO
+  MAVEN
+  RUBYGEMS
+  NUGET
+  CARGO
+  COMPOSER
+  GITHUB_ACTIONS
+  UNKNOWN
+}
+
+enum Severity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  INFO
+  UNKNOWN
+}
+
+enum Confidence {
+  CONFIRMED
+  LIKELY
+  DEVELOPING
+  UNVERIFIED
+  DISPUTED
+}
+
+enum IncidentStatus {
+  DRAFT
+  NEEDS_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum IncidentType {
+  CVE
+  SUPPLY_CHAIN_ATTACK
+  MALICIOUS_PACKAGE
+  MAINTAINER_COMPROMISE
+  CI_CD_COMPROMISE
+  SECRET_EXFILTRATION
+  DATA_BREACH
+  PACKAGE_TYPO_SQUATTING
+  DEPENDENCY_CONFUSION
+  OTHER
+}
+
+enum SourceType {
+  OSV
+  GITHUB_ADVISORY
+  CISA_KEV
+  NVD
+  VENDOR_BLOG
+  MAINTAINER_ADVISORY
+  NEWS_ARTICLE
+  COMMUNITY_POST
+  MANUAL
+}
+
+enum AdvisorySource {
+  OSV
+  GITHUB
+  CISA
+  NVD
+}
+
+enum RiskLevel {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  NONE
+  UNKNOWN
+}
+
+enum FindingType {
+  KNOWN_VULNERABILITY
+  AFFECTED_BY_INCIDENT
+  POSSIBLY_RELATED
+  ACTIVELY_EXPLOITED
+  MALICIOUS_PACKAGE
+  OUTDATED_SECURITY_SENSITIVE_PACKAGE
+}
+
+enum DigestFrequency {
+  DAILY
+  WEEKLY
+  CRITICAL_ONLY
+}
+
+enum AgentVendor {
+  CURSOR
+  CLAUDE_CODE
+  LOVABLE
+  REPLIT
+  V0
+  WINDSURF
+  BOLT
+  COPILOT
+  OTHER
+}
+
+enum AgentSourceType {
+  REPO
+  CLOUD
+  LOCAL
+}
+
+enum TriageStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskProvider {
+  INTERNAL
+  GITHUB
+  JIRA
+  LINEAR
+}
+
+enum AiGenerationType {
+  INCIDENT_EXTRACTION
+  BEGINNER_TLDR
+  TECHNICAL_SUMMARY
+  REMEDIATION
+  SOURCE_VERIFICATION
+  DIGEST_SUMMARY
+}
+
+model AiGeneration {
+  id           String           @id @default(cuid())
+  type         AiGenerationType
+  provider     String
+  model        String
+  inputHash    String
+  output       Json
+  valid        Boolean          @default(true)
+  violations   Json?
+  incidentId   String?
+  scanReportId String?
+  createdById  String?
+  createdAt    DateTime         @default(now())
+  incident     Incident?        @relation(fields: [incidentId], references: [id])
+  scanReport   ScanReport?      @relation(fields: [scanReportId], references: [id])
+
+  @@index([incidentId])
+  @@index([scanReportId])
+  @@index([type, createdAt])
+}
