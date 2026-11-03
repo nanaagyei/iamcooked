@@ -176,6 +176,7 @@ model IncidentPackage {
 
 model ScanReport {
   id                     String         @id @default(cuid())
+  /// Prefer app-generated crypto tokens (createOpaqueToken); cuid default is a legacy fallback.
   accessToken            String         @unique @default(cuid())
   userId                 String?
   projectId              String?
@@ -238,6 +239,7 @@ model NewsletterSubscription {
   email            String           @unique
   interests        Json?
   frequency        DigestFrequency  @default(WEEKLY)
+  /// Prefer app-generated crypto tokens (createOpaqueToken); cuid default is a legacy fallback.
   unsubscribeToken String           @unique @default(cuid())
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt

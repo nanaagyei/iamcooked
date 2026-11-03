@@ -46,16 +46,37 @@ function checkInMemoryRateLimit(key: string, limit: number, windowMs: number): b
   return true;
 }
 
+function isProductionRuntime(): boolean {
+  return (
+    process.env.VERCEL_ENV === "production" ||
+    (process.env.NODE_ENV === "production" && process.env.VERCEL_ENV !== "preview")
+  );
+}
+
+/**
+ * Client IP for rate limiting.
+ * Only trust forwarded headers behind Vercel / an explicitly trusted proxy.
+ */
 export function getClientIp(request: Request): string {
-  const realIp = request.headers.get("x-real-ip");
-  if (realIp) return realIp.trim();
+  const trustProxy = Boolean(process.env.VERCEL) || process.env.TRUST_PROXY === "1";
+  if (!trustProxy) {
+    return "unknown";
+  }
 
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0]?.trim() ?? "unknown";
 
+  const realIp = request.headers.get("x-real-ip");
+  if (realIp) return realIp.trim();
+
   return "unknown";
 }
 
+/**
+ * Returns true when the request is allowed.
+ * In production, fails closed unless Upstash Redis is configured
+ * (in-memory maps are per-instance and ineffective on serverless).
+ */
 export async function checkRateLimit(
   key: string,
   limit: number,
@@ -65,6 +86,13 @@ export async function checkRateLimit(
   if (upstashLimiter) {
     const result = await upstashLimiter.limit(key);
     return result.success;
+  }
+
+  if (isProductionRuntime() && process.env.RATE_LIMIT_ALLOW_MEMORY !== "1") {
+    console.error(
+      "[rate-limit] Upstash Redis is required in production; denying request.",
+    );
+    return false;
   }
 
   return checkInMemoryRateLimit(key, limit, windowMs);

@@ -7,7 +7,18 @@ export const envSchema = z.object({
   GITHUB_TOKEN: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
   NEXT_PUBLIC_APP_URL: z.string().url(),
-  OSV_API_BASE_URL: z.string().url().default("https://api.osv.dev"),
+  OSV_API_BASE_URL: z
+    .string()
+    .url()
+    .default("https://api.osv.dev")
+    .refine((value) => {
+      try {
+        const url = new URL(value);
+        return url.protocol === "https:" && url.hostname === "api.osv.dev";
+      } catch {
+        return false;
+      }
+    }, "OSV_API_BASE_URL must be https://api.osv.dev"),
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 });
@@ -98,13 +109,13 @@ export const adminIncidentCreateSchema = z.object({
   technicalSummary: z.string().max(50000).optional(),
 });
 
+/** Editable draft fields only — publish/archive must use dedicated routes. */
 export const adminIncidentPatchSchema = z.object({
   title: z.string().min(1).max(500).optional(),
   beginnerTldr: z.string().max(10000).optional(),
   technicalSummary: z.string().max(50000).optional(),
   severity: severitySchema.optional(),
   confidence: confidenceSchema.optional(),
-  status: incidentStatusSchema.optional(),
   recommendedActions: z
     .array(
       z.object({
@@ -175,7 +186,7 @@ export const aiGenerateSchema = z.discriminatedUnion("type", [
 
 export const aiRemediationSchema = z.object({
   scanReportId: cuidParamSchema,
-  scanAccessToken: z.string().min(1).max(64).optional(),
+  scanAccessToken: z.string().min(1).max(128).optional(),
   regenerate: z.boolean().optional().default(false),
 });
 
@@ -196,7 +207,7 @@ export const copilotChatSchema = z
     messages: z.array(uiMessageSchema).max(20).default([]),
     incidentSlug: slugParamSchema.optional(),
     scanReportId: cuidParamSchema.optional(),
-    scanAccessToken: z.string().min(1).max(64).optional(),
+    scanAccessToken: z.string().min(1).max(128).optional(),
   })
   .refine(
     (data) => !data.scanReportId || !!data.scanAccessToken,

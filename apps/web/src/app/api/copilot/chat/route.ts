@@ -9,6 +9,7 @@ import {
 import { getLanguageModel, isAiConfigured } from "@iamcooked/ai";
 import { copilotChatSchema } from "@iamcooked/validators";
 import { apiError, parseJsonBody } from "@/lib/api-error";
+import { requireAuth } from "@/lib/auth-utils";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { canAccessScanReport } from "@/lib/scan-auth";
 
@@ -53,12 +54,16 @@ export async function POST(req: Request) {
   if (!parsed.ok) return parsed.response;
 
   const body = parsed.data;
+  const user = await requireAuth();
 
+  // Scan report context: token or owning session. Otherwise require sign-in.
   if (body.scanReportId) {
     const allowed = await canAccessScanReport(body.scanReportId, body.scanAccessToken);
     if (!allowed) {
       return apiError("FORBIDDEN", "Invalid scan report access.", 403);
     }
+  } else if (!user) {
+    return apiError("UNAUTHORIZED", "Sign in to use the security copilot.", 401);
   }
 
   let contextBlock = "";

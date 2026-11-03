@@ -1,5 +1,27 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { queryBatch } from "../osv";
+import { getOsvBaseUrl, queryBatch } from "../osv";
+
+describe("getOsvBaseUrl", () => {
+  afterEach(() => {
+    delete process.env.OSV_API_BASE_URL;
+  });
+
+  it("defaults to api.osv.dev", () => {
+    expect(getOsvBaseUrl(undefined)).toBe("https://api.osv.dev");
+  });
+
+  it("rejects non-allowlisted hosts to prevent SSRF", () => {
+    expect(getOsvBaseUrl("http://169.254.169.254/latest/meta-data")).toBe(
+      "https://api.osv.dev",
+    );
+    expect(getOsvBaseUrl("https://evil.example/osv")).toBe("https://api.osv.dev");
+  });
+
+  it("allows the official OSV origin", () => {
+    expect(getOsvBaseUrl("https://api.osv.dev")).toBe("https://api.osv.dev");
+    expect(getOsvBaseUrl("https://api.osv.dev/v1")).toBe("https://api.osv.dev");
+  });
+});
 
 describe("queryBatch", () => {
   beforeEach(() => {

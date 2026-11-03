@@ -3,6 +3,7 @@ import { newsletterSubscribeSchema } from "@iamcooked/validators";
 import { auth } from "@/lib/auth";
 import { apiError, apiSuccess, parseJsonBody } from "@/lib/api-error";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { createOpaqueToken } from "@/lib/tokens";
 
 const RATE_LIMIT = 5;
 const RATE_LIMIT_WINDOW = 60_000;
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
       interests,
       frequency,
       userId: session?.user?.id ?? null,
+      unsubscribeToken: createOpaqueToken(),
     },
     update: { interests, frequency, userId: session?.user?.id ?? undefined },
   });

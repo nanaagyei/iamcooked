@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { escapeHtml, slugParamSchema, copilotChatSchema, aiRemediationSchema } from "@iamcooked/validators";
+import {
+  escapeHtml,
+  slugParamSchema,
+  copilotChatSchema,
+  aiRemediationSchema,
+  adminIncidentPatchSchema,
+} from "@iamcooked/validators";
 
 describe("security validators", () => {
   it("escapes HTML entities", () => {
@@ -44,5 +50,17 @@ describe("security validators", () => {
       })),
     });
     expect(parsed.success).toBe(false);
+  });
+
+  it("rejects status on admin incident patch (publish must use /publish)", () => {
+    const parsed = adminIncidentPatchSchema.safeParse({
+      title: "Updated title",
+      status: "PUBLISHED",
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data).not.toHaveProperty("status");
+      expect(parsed.data.title).toBe("Updated title");
+    }
   });
 });

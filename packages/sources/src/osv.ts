@@ -42,8 +42,22 @@ interface OsvBatchResponse {
   results: Array<{ vulns?: OsvRawVuln[] }>;
 }
 
-function getBaseUrl(): string {
-  return process.env["OSV_API_BASE_URL"] ?? "https://api.osv.dev";
+const DEFAULT_OSV_ORIGIN = "https://api.osv.dev";
+const ALLOWED_OSV_HOSTS = new Set(["api.osv.dev"]);
+
+/** Resolve OSV API origin; reject non-allowlisted hosts to prevent SSRF. */
+export function getOsvBaseUrl(raw = process.env["OSV_API_BASE_URL"]): string {
+  if (!raw) return DEFAULT_OSV_ORIGIN;
+
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== "https:" || !ALLOWED_OSV_HOSTS.has(url.hostname)) {
+      return DEFAULT_OSV_ORIGIN;
+    }
+    return url.origin;
+  } catch {
+    return DEFAULT_OSV_ORIGIN;
+  }
 }
 
 function parseVuln(raw: OsvRawVuln): OsvVulnerability {
@@ -81,7 +95,7 @@ function parseVuln(raw: OsvRawVuln): OsvVulnerability {
 }
 
 export async function querySingle(name: string, version: string): Promise<OsvVulnerability[]> {
-  const baseUrl = getBaseUrl();
+  const baseUrl = getOsvBaseUrl();
   const response = await fetch(`${baseUrl}/v1/query`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -102,7 +116,7 @@ export async function querySingle(name: string, version: string): Promise<OsvVul
 export async function queryBatch(
   dependencies: Array<{ name: string; version: string }>,
 ): Promise<Record<string, OsvVulnerability[]>> {
-  const baseUrl = getBaseUrl();
+  const baseUrl = getOsvBaseUrl();
 
   const queries = dependencies.map((dep) => ({
     package: { name: dep.name, ecosystem: "npm" },

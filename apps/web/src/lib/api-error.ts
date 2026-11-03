@@ -34,13 +34,39 @@ export function validationError(error: ZodError): NextResponse<ApiErrorBody> {
   );
 }
 
+const DEFAULT_MAX_JSON_BYTES = 1_048_576; // 1 MiB
+
 export async function parseJsonBody<T>(
   request: Request,
   schema: ZodSchema<T>,
+  options?: { maxBytes?: number },
 ): Promise<{ ok: true; data: T } | { ok: false; response: NextResponse<ApiErrorBody> }> {
+  const maxBytes = options?.maxBytes ?? DEFAULT_MAX_JSON_BYTES;
+  const contentLength = request.headers.get("content-length");
+  if (contentLength && Number(contentLength) > maxBytes) {
+    return {
+      ok: false,
+      response: apiError("PAYLOAD_TOO_LARGE", "Request body is too large.", 413),
+    };
+  }
+
+  let raw: string;
+  try {
+    raw = await request.text();
+  } catch {
+    return { ok: false, response: apiError("INVALID_JSON", "Request body must be valid JSON.", 400) };
+  }
+
+  if (new TextEncoder().encode(raw).byteLength > maxBytes) {
+    return {
+      ok: false,
+      response: apiError("PAYLOAD_TOO_LARGE", "Request body is too large.", 413),
+    };
+  }
+
   let body: unknown;
   try {
-    body = await request.json();
+    body = raw.length === 0 ? null : JSON.parse(raw);
   } catch {
     return { ok: false, response: apiError("INVALID_JSON", "Request body must be valid JSON.", 400) };
   }

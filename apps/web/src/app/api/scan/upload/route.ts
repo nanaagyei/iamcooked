@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { apiError, apiSuccess } from "@/lib/api-error";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { processLockfileScan } from "@/lib/scan-processor";
+import { createOpaqueToken } from "@/lib/tokens";
 import { parseLockfile, detectLockfileType } from "@iamcooked/scanner";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -97,6 +98,7 @@ export async function POST(request: Request) {
   const scanReport = await prisma.scanReport.create({
     data: {
       userId,
+      accessToken: createOpaqueToken(),
       uploadFileName: file.name,
       ecosystem: ecosystem as "NPM",
       riskScore: processed.riskScore,

@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+/**
+ * First-pass gate: cookie presence only (Edge-safe; avoids Prisma in middleware).
+ * Real authorization (session + ADMIN role / ADMIN_EMAILS) lives in route handlers
+ * via `requireAuth()` / `requireAdmin()`.
+ */
 function hasSessionCookie(request: NextRequest) {
   return (
     request.cookies.has("authjs.session-token") ||
