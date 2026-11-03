@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -102,12 +104,19 @@ function NavLinks({
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-                      active
-                        ? "bg-primary/10 font-medium text-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                      "group relative isolate flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                      active ? "font-medium text-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground",
                     )}
                   >
+                    {active && (
+                      <motion.span
+                        layoutId="sidebar-active"
+                        className="absolute inset-0 -z-10 rounded-lg bg-primary/10 ring-1 ring-primary/20"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                      >
+                        <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary" />
+                      </motion.span>
+                    )}
                     <ItemIcon
                       className={cn(
                         "h-[1.05rem] w-[1.05rem] shrink-0",

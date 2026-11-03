@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowSquareOut, BellSimple, CheckCircle, MagnifyingGlass, Pulse, Skull } from "@phosphor-icons/react";
 import { SeverityBadge } from "@/components/badges";
@@ -151,7 +152,7 @@ function ToolCard({ tool, signedIn }: { tool: ToolCardData; signedIn: boolean })
   };
 
   return (
-    <article className="flex min-w-0 flex-col rounded-2xl border border-border bg-card p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.08)]">
+    <article className="flex h-full min-w-0 flex-col rounded-2xl border border-border bg-card p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.08)] transition-[border-color,box-shadow] duration-300 hover:border-foreground/20 hover:shadow-[0_30px_60px_-30px_rgba(249,116,59,0.35)]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-base font-semibold tracking-tight">
@@ -255,12 +256,13 @@ export function ToolWatchClient({
               aria-selected={category === c.id}
               onClick={() => setCategory(c.id)}
               className={cn(
-                "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                category === c.id
-                  ? "border-primary/40 bg-primary/10 text-foreground"
-                  : "border-border bg-card text-muted-foreground hover:text-foreground",
+                "relative isolate rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                category === c.id ? "border-primary/40 text-foreground" : "border-border bg-card text-muted-foreground hover:text-foreground",
               )}
             >
+              {category === c.id && (
+                <motion.span layoutId="tool-cat" className="absolute inset-0 -z-10 rounded-full bg-primary/10" transition={{ type: "spring", stiffness: 400, damping: 34 }} />
+              )}
               {c.label}
             </button>
           ))}
@@ -287,9 +289,21 @@ export function ToolWatchClient({
         </p>
       ) : (
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 [&>*]:min-w-0">
-          {filtered.map((t) => (
-            <ToolCard key={t.id} tool={t} signedIn={signedIn} />
-          ))}
+          <AnimatePresence mode="popLayout" initial={false}>
+            {filtered.map((t, i) => (
+              <motion.div
+                key={t.id}
+                layout
+                initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1, transition: { delay: Math.min(i, 8) * 0.03 } }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="min-w-0"
+              >
+                <ToolCard tool={t} signedIn={signedIn} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
     </div>

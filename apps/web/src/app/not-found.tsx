@@ -1,42 +1,49 @@
 import Link from "next/link";
+import { House, MagnifyingGlass, Robot } from "@phosphor-icons/react/dist/ssr";
 import { MarketingLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { Compass, House, MagnifyingGlass } from "@phosphor-icons/react/dist/ssr";
+import { GlowOrbs, GridBackground, Reveal, SplitText, Parallax } from "@/components/motion";
 
 export default function NotFound() {
   return (
-    <MarketingLayout>
-      <div className="flex min-h-[65dvh] flex-col items-center justify-center px-4 py-16 text-center">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-full border border-border bg-muted">
-          <Compass className="h-8 w-8 text-muted-foreground" weight="bold" aria-hidden />
-        </div>
-        <p className="mt-6 font-mono text-sm uppercase tracking-widest text-muted-foreground">
-          404 · Not found
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-          This page does not exist
-        </h1>
-        <p className="mt-4 max-w-md text-base leading-relaxed text-muted-foreground">
-          The URL may be wrong, or the page was moved or removed. Head back to the homepage to
-          continue exploring iamcooked.
-        </p>
-        <div className="mt-10 flex flex-wrap justify-center gap-3">
-          <Button asChild size="lg">
-            <Link href="/">
-              <House className="h-4 w-4" weight="bold" aria-hidden />
-              Back to homepage
-            </Link>
-          </Button>
-          <Button variant="outline" size="lg" asChild>
-            <Link href="/incidents">
-              <MagnifyingGlass className="h-4 w-4" weight="bold" aria-hidden />
-              Browse incidents
-            </Link>
-          </Button>
-          <Button variant="outline" size="lg" asChild>
-            <Link href="/scan">Scan your project</Link>
-          </Button>
-        </div>
+    <MarketingLayout overlap>
+      <div className="relative isolate flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-4 pb-16 pt-32 text-center">
+        <GridBackground className="-z-10" />
+        <GlowOrbs className="-z-10 opacity-70" />
+        <Parallax speed={-30} className="pointer-events-none absolute inset-x-0 top-1/2 -z-10 -translate-y-1/2 select-none">
+          <p aria-hidden className="bg-gradient-to-b from-foreground/10 to-transparent bg-clip-text text-[40vw] font-bold leading-none tracking-tighter text-transparent sm:text-[28vw]">
+            404
+          </p>
+        </Parallax>
+        <Reveal blur={false}>
+          <p className="font-mono text-sm uppercase tracking-widest text-primary">404 · not found</p>
+        </Reveal>
+        <SplitText text="This page got cooked." highlight={[3]} className="mt-4 text-4xl font-semibold tracking-tighter sm:text-6xl" />
+        <Reveal delay={0.3}>
+          <p className="mx-auto mt-5 max-w-md text-muted-foreground">
+            The link may be wrong, or the page moved. Your dependencies might still be fine, so why not check?
+          </p>
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            <Button asChild size="lg">
+              <Link href="/">
+                <House className="h-4 w-4" weight="bold" aria-hidden />
+                Home
+              </Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/scan">
+                <MagnifyingGlass className="h-4 w-4" weight="bold" aria-hidden />
+                Scan a project
+              </Link>
+            </Button>
+            <Button variant="ghost" size="lg" asChild>
+              <Link href="/tools">
+                <Robot className="h-4 w-4" weight="bold" aria-hidden />
+                Tool Watch
+              </Link>
+            </Button>
+          </div>
+        </Reveal>
       </div>
     </MarketingLayout>
   );

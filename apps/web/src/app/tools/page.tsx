@@ -2,8 +2,9 @@ export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
 import { ECOSYSTEM_LABEL, TOOL_CATEGORY_LABEL, type ToolCategory } from "@iamcooked/core";
-import { MarketingLayout, SectionContainer } from "@/components/layout";
-import { PageBackdrop } from "@/components/layout/PageBackdrop";
+import { MarketingLayout, PageHero, SectionContainer } from "@/components/layout";
+import { AnimatedCounter } from "@/components/ui/animated-counter";
+import { BorderBeam, Reveal } from "@/components/motion";
 import { ToolWatchClient, type ToolCardData } from "@/components/tools/ToolWatchClient";
 import { CopyCommand } from "@/components/check/CopyCommand";
 import { SeverityBadge } from "@/components/badges";
@@ -48,40 +49,37 @@ export default async function ToolsPage() {
   const categories = (Object.keys(TOOL_CATEGORY_LABEL) as ToolCategory[]).map((id) => ({ id, label: TOOL_CATEGORY_LABEL[id] }));
 
   return (
-    <MarketingLayout>
-      <section className="relative overflow-hidden border-b border-border">
-        <PageBackdrop variant="scan" seed="iamcooked-tools" />
-        <SectionContainer className="relative py-16 sm:py-20">
-          <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-end">
-            <div className="max-w-2xl">
-              <p className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-primary">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-                Tool Watch
-              </p>
-              <h1 className="mt-4 text-4xl font-semibold leading-[1.05] tracking-tighter sm:text-5xl">
-                Is your AI coding stack in a CVE right now?
-              </h1>
-              <p className="mt-4 max-w-[60ch] leading-relaxed text-muted-foreground">
-                Live advisory status for the agents, MCP servers, SDKs and frameworks vibecoders actually run. Check
-                your version in one click, or get an email the day a new CVE lands.
-              </p>
-              <p className="mt-6 font-mono text-sm tabular-nums text-muted-foreground">
-                {tools.length} tools tracked · {active} with advisories in the last 90 days
-              </p>
-            </div>
-            <div className="rounded-2xl border border-border bg-card/80 p-5 backdrop-blur">
-              <p className="text-sm font-medium">Check everything installed on your machine</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Detects Claude Code, Codex, Gemini CLI, Aider, global npm packages and your MCP configs.
-              </p>
-              <CopyCommand command="npx iamcooked doctor" className="mt-3" />
+    <MarketingLayout overlap>
+      <PageHero
+        eyebrow="Tool Watch"
+        title="Is your AI coding stack in a CVE right now?"
+        highlight={[6, 7, 8]}
+        description="Live advisory status for the agents, MCP servers, SDKs and frameworks vibecoders actually run. Check your version in one click, or get an email the day a new CVE lands."
+        aside={
+          <div className="relative rounded-2xl border border-border bg-card/80 p-5 backdrop-blur">
+            <BorderBeam duration={9} />
+            <p className="text-sm font-medium">Check everything installed on your machine</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Detects Claude Code, Codex, Gemini CLI, Aider, global npm packages and your MCP configs.
+            </p>
+            <CopyCommand command="npx iamcooked doctor" className="mt-3" />
+            <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border pt-4 text-center">
+              <div>
+                <p className="text-3xl font-semibold tabular-nums"><AnimatedCounter value={tools.length} /></p>
+                <p className="text-xs text-muted-foreground">tools tracked</p>
+              </div>
+              <div>
+                <p className="text-3xl font-semibold tabular-nums text-primary"><AnimatedCounter value={active} /></p>
+                <p className="text-xs text-muted-foreground">with advisories in 90 days</p>
+              </div>
             </div>
           </div>
-        </SectionContainer>
-      </section>
+        }
+      />
 
       {recent.length > 0 && (
         <SectionContainer className="pt-12">
+          <Reveal>
           <h2 className="text-lg font-semibold tracking-tight">Recently disclosed</h2>
           <ul className="mt-4 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
             {recent.map((a) => (
@@ -104,6 +102,7 @@ export default async function ToolsPage() {
               </li>
             ))}
           </ul>
+          </Reveal>
         </SectionContainer>
       )}
 
