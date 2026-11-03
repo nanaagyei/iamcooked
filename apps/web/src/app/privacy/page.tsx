@@ -1,158 +1,217 @@
-import { MarketingLayout, SectionContainer } from "@/components/layout";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { LegalPage, type LegalSection } from "@/components/legal/LegalPage";
+
+export const metadata: Metadata = {
+  title: "Privacy policy",
+  description: "What iamcooked collects, why, who processes it, and how to get it deleted.",
+};
+
+const sections: LegalSection[] = [
+  {
+    id: "who-we-are",
+    title: "Who we are",
+    body: (
+      <p>
+        iamcooked is an open-source project that helps people find vulnerable and malicious dependencies, MCP servers
+        and AI coding tools. This policy covers the website and API at iamcooked.dev (&ldquo;the service&rdquo;). The{" "}
+        <strong>CLI and GitHub Action run on your own machine</strong> and send nothing to us; see{" "}
+        <a href="#cli">the CLI section</a>.
+      </p>
+    ),
+  },
+  {
+    id: "what-we-collect",
+    title: "What we collect",
+    body: (
+      <>
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>When</th>
+              <th>Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>GitHub name, email, avatar and user ID</td>
+              <td>You sign in with GitHub</td>
+              <td>Create your account, save scans and watchlists, send alerts you ask for</td>
+            </tr>
+            <tr>
+              <td>Scan results: file name, ecosystem, matched package names/versions, advisories, risk score</td>
+              <td>You scan a lockfile</td>
+              <td>Show and share your report; link it to your account if you sign in</td>
+            </tr>
+            <tr>
+              <td>Watchlist packages and digest preferences</td>
+              <td>You add them</td>
+              <td>Send the alerts and digests you subscribed to</td>
+            </tr>
+            <tr>
+              <td>Email address</td>
+              <td>You subscribe to the newsletter</td>
+              <td>Send the weekly brief and critical alerts</td>
+            </tr>
+            <tr>
+              <td>IP address and request metadata</td>
+              <td>Every request</td>
+              <td>Rate limiting and abuse prevention; kept in short-lived counters and standard server logs</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <strong>We do not store your lockfile.</strong> It is parsed in memory and discarded once the report is
+          generated. <strong>MCP configs pasted into the MCP checker never leave your browser</strong>; only the
+          names and versions of pinned packages are sent to our <code>/api/check</code> endpoint.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "what-we-dont",
+    title: "What we don't do",
+    body: (
+      <ul>
+        <li>We don&apos;t sell or rent personal data, and we don&apos;t run advertising.</li>
+        <li>We don&apos;t use third-party tracking pixels or cross-site analytics.</li>
+        <li>We don&apos;t read your repositories. GitHub sign-in only asks for your public profile and email.</li>
+        <li>We don&apos;t train AI models on your scans.</li>
+      </ul>
+    ),
+  },
+  {
+    id: "processors",
+    title: "Who processes data for us",
+    body: (
+      <>
+        <p>We use a small number of providers, each only for the purpose listed:</p>
+        <ul>
+          <li>
+            <strong>Hosting and database</strong> (e.g. Vercel, a managed PostgreSQL provider): run the app and store
+            accounts, scans and watchlists.
+          </li>
+          <li>
+            <strong>OSV.dev</strong> (Google, open source): receives package names and versions to look up advisories.
+          </li>
+          <li>
+            <strong>CISA</strong>: we download the public Known Exploited Vulnerabilities catalog. Nothing about you is
+            sent.
+          </li>
+          <li>
+            <strong>Upstash</strong>: short-lived rate-limit counters keyed by IP address.
+          </li>
+          <li>
+            <strong>Resend</strong>: delivers digest and alert emails to your address.
+          </li>
+          <li>
+            <strong>OpenAI / Anthropic</strong>: only when you ask for an AI remediation plan or use the security
+            copilot. They receive the relevant findings or your question, not your lockfile.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "cookies",
+    title: "Cookies and local storage",
+    body: (
+      <p>
+        We use strictly-necessary cookies for sign-in and security, plus a few local-storage keys for preferences
+        like your theme. The full list, and how to change your choices, is in the <Link href="/cookies">cookie policy</Link>.
+      </p>
+    ),
+  },
+  {
+    id: "retention",
+    title: "How long we keep it",
+    body: (
+      <ul>
+        <li>Account data: until you delete your account.</li>
+        <li>Scan reports: reachable only with their private link or from your account; kept until you ask us to delete them.</li>
+        <li>Newsletter subscriptions: until you unsubscribe (every email has a one-click link).</li>
+        <li>Rate-limit counters: minutes. Server logs: per our hosting provider&apos;s retention, typically 30 days or less.</li>
+      </ul>
+    ),
+  },
+  {
+    id: "your-rights",
+    title: "Your rights",
+    body: (
+      <>
+        <p>
+          Wherever you live, you can ask us to access, correct, export or delete your data, and you can object to or
+          restrict processing. If you&apos;re in the EU/UK (GDPR) or California (CCPA/CPRA) these are legal rights; we
+          extend them to everyone.
+        </p>
+        <p>
+          Our legal bases are: <strong>contract</strong> (providing the service you signed up for),{" "}
+          <strong>legitimate interest</strong> (security, abuse prevention) and <strong>consent</strong> (newsletter,
+          optional cookies). You can withdraw consent at any time.
+        </p>
+        <p>
+          To make a request, open a{" "}
+          <a href="https://github.com/nanaagyei/iamcooked/security/advisories/new">private report</a> titled
+          &ldquo;Privacy request&rdquo;. We respond within 30 days. You can also complain to your local data protection
+          authority.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "cli",
+    title: "The CLI and GitHub Action",
+    body: (
+      <p>
+        <code>npx iamcooked</code> runs locally. It sends package names and versions directly to OSV.dev and downloads
+        the CISA KEV catalog. It does not contact iamcooked servers, does not collect telemetry and does not upload your
+        files. You can verify this in the source code on GitHub.
+      </p>
+    ),
+  },
+  {
+    id: "security",
+    title: "Security",
+    body: (
+      <p>
+        Traffic is encrypted with TLS, report links use unguessable tokens, and the code is public so anyone can audit
+        it. See our <Link href="/security">security page</Link> for details, and report vulnerabilities privately on
+        GitHub.
+      </p>
+    ),
+  },
+  {
+    id: "children",
+    title: "Children",
+    body: <p>The service isn&apos;t directed at children under 13 (16 in the EU), and we don&apos;t knowingly collect their data.</p>,
+  },
+  {
+    id: "changes",
+    title: "Changes to this policy",
+    body: (
+      <p>
+        We&apos;ll update the date at the top when this changes, and email account holders about material changes before
+        they take effect. The full history is in our public Git repository.
+      </p>
+    ),
+  },
+];
 
 export default function PrivacyPage() {
   return (
-    <MarketingLayout>
-      <SectionContainer size="narrow" className="py-16 sm:py-20">
-        <p className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-primary">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-          Legal
-        </p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tighter sm:text-4xl text-foreground">
-          Privacy Policy
-        </h1>
-        <p className="mt-3 max-w-[65ch] text-muted-foreground">
-          Your privacy is important to us. This policy explains what data we collect and how we
-          handle it.
-        </p>
-
-        <div className="mt-12 space-y-12">
-          <section>
-            <h2 className="text-xl font-semibold text-foreground">
-              Information We Collect
-            </h2>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              We collect only the information necessary to provide our service:
-            </p>
-            <ul className="mt-3 space-y-2 text-muted-foreground leading-relaxed">
-              <li className="flex gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-border" />
-                <span>
-                  <strong className="text-foreground">
-                    Email address
-                  </strong>{" "}
-                  — if you subscribe to our security digest newsletter. We use this solely to
-                  deliver the digest and critical alerts matching your stack.
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-border" />
-                <span>
-                  <strong className="text-foreground">
-                    Uploaded lockfile information
-                  </strong>{" "}
-                  — when you scan a project, we extract dependency names, versions, and ecosystem
-                  metadata from your lockfile. This data is processed temporarily in memory and is{" "}
-                  <strong className="text-foreground">not stored</strong> on our servers
-                  after the scan completes.
-                </span>
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-foreground">
-              What We Do Not Collect
-            </h2>
-            <ul className="mt-3 space-y-2 text-muted-foreground leading-relaxed">
-              <li className="flex gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-border" />
-                <span>
-                  <strong className="text-foreground">Tracking</strong> — we do not use
-                  third-party analytics, tracking pixels, or behavioral profiling.
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-border" />
-                <span>
-                  <strong className="text-foreground">Cookies beyond essential session</strong>{" "}
-                  — we only use cookies required for the application to function. We do not deploy
-                  advertising or cross-site tracking cookies.
-                </span>
-              </li>
-              <li className="flex gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-border" />
-                <span>
-                  <strong className="text-foreground">Personal data sale</strong> — we do
-                  not sell, license, or share your personal data with any third party for
-                  commercial purposes.
-                </span>
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-foreground">
-              How We Process Lockfile Data
-            </h2>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              When you upload a lockfile for scanning, the following happens:
-            </p>
-            <ol className="mt-3 space-y-2 text-muted-foreground leading-relaxed list-decimal list-inside">
-              <li>
-                Dependency metadata (package names, versions, ecosystems) is extracted from your
-                lockfile in memory.
-              </li>
-              <li>
-                Each dependency is cross-referenced against public vulnerability databases including
-                OSV, GitHub Advisory Database, and CISA&apos;s Known Exploited Vulnerabilities
-                catalog.
-              </li>
-              <li>
-                A report is generated and returned to you. Once the response is sent, all extracted
-                dependency data is discarded from memory.
-              </li>
-            </ol>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              We never store your lockfile contents or extracted dependency graph on disk, in a
-              database, or in logs.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-foreground">
-              Email and Newsletter
-            </h2>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              If you subscribe to our security digest, your email address is stored solely for the
-              purpose of delivering the digest and relevant security alerts. You may unsubscribe at
-              any time via the unsubscribe link included in every email. Upon unsubscribing, your
-              email address is permanently removed from our mailing list.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-foreground">
-              Data Retention
-            </h2>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              Email addresses for newsletter subscribers are retained until you unsubscribe. No
-              other personal data is stored. Uploaded lockfile data and extracted dependency
-              information are processed transiently and discarded after each request.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-foreground">
-              Contact
-            </h2>
-            <p className="mt-3 text-muted-foreground leading-relaxed">
-              If you have questions about this privacy policy or data handling, contact us at{" "}
-              <a
-                href="mailto:privacy@iamcooked.dev"
-                className="text-foreground underline underline-offset-2 hover:text-foreground/80"
-              >
-                privacy@iamcooked.dev
-              </a>
-              .
-            </p>
-          </section>
-        </div>
-
-        <p className="mt-16 text-xs text-muted-foreground/60">
-          Last updated: June 9, 2026
-        </p>
-      </SectionContainer>
-    </MarketingLayout>
+    <LegalPage
+      current="/privacy"
+      title="Privacy policy"
+      updated="November 3, 2026"
+      intro="We collect as little as possible, keep it for as short as possible, and never sell it. Here's exactly what that means."
+      summary={[
+        "Lockfiles are processed in memory and never stored.",
+        "MCP configs are analysed in your browser. Secrets never leave it.",
+        "The CLI doesn't talk to our servers or collect telemetry.",
+        "No ads, no trackers, no data sales, no AI training on your scans.",
+      ]}
+      sections={sections}
+    />
   );
 }

@@ -13,3 +13,5 @@ export {
   pickBeginnerLesson,
 } from "./digest-helpers";
 export type { DigestIncident, DigestSubscriber } from "./digest-helpers";
+export { sendWatchlistAdvisoryAlerts, selectNewAdvisories } from "./advisory-alerts";
+export type { NewAdvisory } from "./advisory-alerts";

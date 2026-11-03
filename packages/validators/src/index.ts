@@ -228,7 +228,26 @@ export const userPreferencesPatchSchema = z.object({
 });
 
 export const cronDigestQuerySchema = z.object({
-  type: z.enum(["weekly", "critical"]).default("weekly"),
+  type: z.enum(["weekly", "critical", "advisories"]).default("weekly"),
+});
+
+/** Ecosystems the vulnerability engine can check (subset of ecosystemSchema). */
+export const checkableEcosystemSchema = z.enum(["NPM", "PYPI", "GO", "CARGO", "RUBYGEMS", "COMPOSER"]);
+
+export const packageCheckSchema = z.object({
+  packages: z
+    .array(
+      z.object({
+        ecosystem: checkableEcosystemSchema,
+        name: z.string().trim().min(1).max(214),
+        version: z.string().trim().min(1).max(64),
+        direct: z.boolean().optional(),
+        /** Free-form label shown back to the user, e.g. "mcp:github". */
+        via: z.string().max(100).optional(),
+      }),
+    )
+    .min(1)
+    .max(100),
 });
 
 export function escapeHtml(value: string): string {

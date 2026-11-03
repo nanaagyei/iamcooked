@@ -1,0 +1,32 @@
+name: Bug report
+description: Something is broken or gives the wrong answer
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Security issues in iamcooked itself** go through
+        [private reporting](https://github.com/nanaagyei/iamcooked/security/advisories/new) instead.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where did it happen?
+      options: [CLI (npx iamcooked), Web app scan, Tool Watch, MCP check, Email alerts, GitHub Action, Other]
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      placeholder: "iamcooked said lodash@4.17.15 is clean, but GHSA-xxxx affects it…"
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: How can we reproduce it?
+      description: Command you ran, and a minimal lockfile or config snippet. **Remove any secrets.**
+      render: shell
+  - type: input
+    id: version
+    attributes:
+      label: Version / OS
+      placeholder: "iamcooked 0.1.0, Node 22, macOS 15"

@@ -8,6 +8,7 @@ import { CommandProvider } from "@/components/command/command-context";
 import { CommandPalette } from "@/components/command/CommandPalette";
 import { SecurityCopilot } from "@/components/copilot/SecurityCopilot";
 import { ScanClaimOnAuth } from "@/components/scan/ScanClaimOnAuth";
+import { CookieConsent } from "@/components/consent/CookieConsent";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -20,6 +21,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
             <SecurityCopilot />
             <ScanClaimOnAuth />
             <Toaster />
+            <CookieConsent />
           </CommandProvider>
         </QueryProvider>
       </AuthProvider>

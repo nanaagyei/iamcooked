@@ -12,9 +12,10 @@ interface PackageEntry {
   peerDependencies?: Record<string, string>;
 }
 
-function extractNameFromPath(path: string): string {
-  const parts = path.split("/node_modules/");
-  return parts[parts.length - 1]!;
+/** "node_modules/a/node_modules/@scope/b" → "@scope/b" */
+export function extractNameFromPath(path: string): string {
+  const idx = path.lastIndexOf("node_modules/");
+  return idx === -1 ? path : path.slice(idx + "node_modules/".length);
 }
 
 function getDirectDepNames(root: PackageEntry | undefined): Set<string> {
@@ -34,22 +35,32 @@ function getDirectDepNames(root: PackageEntry | undefined): Set<string> {
 function parsePackagesFormat(packages: Record<string, PackageEntry>): NormalizedDependency[] {
   const root = packages[""];
   const directDepNames = getDirectDepNames(root);
+  const devDepNames = new Set(Object.keys(root?.devDependencies ?? {}));
   const results: NormalizedDependency[] = [];
 
   for (const [path, pkg] of Object.entries(packages)) {
     if (path === "") continue;
     if (pkg.link === true) continue;
 
+    // Workspace packages live outside node_modules (e.g. "packages/foo") — not third-party deps.
+    if (!path.includes("node_modules/")) continue;
+
+    // Aliased installs ("npm:real-pkg@1") record the real package in `name`
     const name = pkg.name ?? extractNameFromPath(path);
     const version = pkg.version ?? null;
 
     if (!version) continue;
 
+    // Only the top-level install of a package counts as direct; nested copies are transitive.
+    const isTopLevel = path === `node_modules/${name}`;
+    const entry = pkg as PackageEntry & { dev?: boolean };
+
     results.push({
       ecosystem: "NPM",
       name,
       version,
-      direct: directDepNames.has(name),
+      direct: isTopLevel && directDepNames.has(name),
+      dev: entry.dev === true || (isTopLevel && devDepNames.has(name)) || undefined,
       sourceFile: "",
     });
   }

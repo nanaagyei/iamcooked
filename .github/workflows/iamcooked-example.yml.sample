@@ -1,0 +1,22 @@
+# Copy this into .github/workflows/iamcooked.yml in YOUR project.
+name: Am I cooked?
+on:
+  pull_request:
+  schedule:
+    - cron: "17 7 * * *" # daily, so new CVEs in unchanged deps still get caught
+permissions:
+  contents: read
+  security-events: write # only needed for the SARIF upload
+jobs:
+  iamcooked:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nanaagyei/iamcooked@main
+        with:
+          fail-on: high
+          sarif: iamcooked.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: iamcooked.sarif

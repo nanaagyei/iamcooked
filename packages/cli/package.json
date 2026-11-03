@@ -1,0 +1,30 @@
+{
+  "name": "iamcooked",
+  "version": "0.1.0",
+  "description": "Am I cooked? Check your lockfiles, MCP servers and AI coding tools for CVEs and malware — in plain English, with the exact fix command.",
+  "keywords": ["security", "cve", "vulnerability", "osv", "mcp", "supply-chain", "lockfile", "vibe-coding", "cli"],
+  "license": "MIT",
+  "homepage": "https://github.com/nanaagyei/iamcooked/tree/main/packages/cli#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/nanaagyei/iamcooked.git", "directory": "packages/cli" },
+  "bugs": "https://github.com/nanaagyei/iamcooked/issues",
+  "type": "module",
+  "bin": { "iamcooked": "dist/iamcooked.mjs" },
+  "files": ["dist", "README.md"],
+  "engines": { "node": ">=18.17" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm build"
+  },
+  "devDependencies": {
+    "@iamcooked/core": "workspace:*",
+    "@iamcooked/scanner": "workspace:*",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.0",
+    "vitest": "^3.0.0"
+  }
+}

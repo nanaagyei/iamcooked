@@ -12,7 +12,7 @@
     "db:studio": "prisma studio",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext ts",
+    "lint": "eslint .",
     "clean": "rm -rf dist"
   },
   "dependencies": {

@@ -7,13 +7,14 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext ts",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "@iamcooked/ai": "workspace:*",
+    "@iamcooked/core": "workspace:*",
     "@iamcooked/db": "workspace:*",
     "@iamcooked/validators": "workspace:*",
     "resend": "^4.1.0"

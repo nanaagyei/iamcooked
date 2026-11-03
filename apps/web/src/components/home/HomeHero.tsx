@@ -1,100 +1,104 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { gsap } from "gsap";
-import { Upload, ArrowRight } from "@phosphor-icons/react";
+import { ArrowRight, Upload, ShieldCheck } from "@phosphor-icons/react";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { Button } from "@/components/ui/button";
-import { RadarIllustration } from "@/components/ui/radar-illustration";
-import { usePrefersReducedMotion } from "@/components/hooks/use-prefers-reduced-motion";
-import { SectionContainer } from "@/components/layout";
-import { PageBackdrop } from "@/components/layout/PageBackdrop";
-import { ProductPreview } from "./ProductPreview";
+import { SectionContainer } from "@/components/layout/SectionContainer";
+import { CopyCommand } from "@/components/check/CopyCommand";
+import SplitFlapText from "@/components/kokonutui/split-flap-text";
+import { SplitText, Reveal, Parallax, Terminal, VantaNet, ScrambleText, type TerminalLine } from "@/components/motion";
+
+const DEMO: TerminalLine[] = [
+  { kind: "cmd", text: "npx iamcooked" },
+  { kind: "out", text: "  3 lockfiles · 812 packages (npm, PyPI) · 1 MCP config", tone: "muted" },
+  { kind: "gap" },
+  { kind: "out", text: "  WELL DONE  risk 62/100", tone: "high" },
+  { kind: "out", text: "  2 critical · 5 high advisories across 4 packages", tone: "muted" },
+  { kind: "gap" },
+  { kind: "out", text: "  CRITICAL  next 14.1.0 → 14.2.25", tone: "critical" },
+  { kind: "out", text: "            Authorization bypass in Next.js middleware", tone: "bold" },
+  { kind: "out", text: "            CVE-2025-29927 · actively exploited (CISA KEV)", tone: "muted" },
+  { kind: "out", text: "            $ pnpm add next@^14.2.25", tone: "accent" },
+  { kind: "gap" },
+  { kind: "out", text: "  CRITICAL  mcp-remote 0.1.10 → 0.1.16  (.cursor/mcp.json)", tone: "critical" },
+  { kind: "out", text: "            OS command injection via untrusted MCP servers", tone: "bold" },
+  { kind: "gap" },
+  { kind: "out", text: "  HIGH      github: hard-coded token in MCP config", tone: "high" },
+];
 
 export function HomeHero() {
-  const heroRef = useRef<HTMLElement>(null);
-  const prefersReducedMotion = usePrefersReducedMotion();
-
-  useEffect(() => {
-    if (prefersReducedMotion) return;
-    const ctx = gsap.context(() => {
-      gsap.from(".hero-text > *", {
-        y: 28,
-        opacity: 0,
-        duration: 0.85,
-        stagger: 0.1,
-        ease: "power3.out",
-      });
-      gsap.fromTo(
-        ".hero-radar",
-        { opacity: 0, scale: 0.9 },
-        { opacity: 1, scale: 1, duration: 1.6, ease: "power2.out" },
-      );
-      gsap.from(".hero-preview", {
-        y: 28,
-        opacity: 0,
-        duration: 0.95,
-        delay: 0.2,
-        ease: "power3.out",
-      });
-    }, heroRef);
-
-    return () => ctx.revert();
-  }, [prefersReducedMotion]);
-
   return (
-    <section ref={heroRef} className="relative min-h-[80dvh] overflow-hidden">
-      <PageBackdrop variant="hero" seed="iamcooked-hero" />
-      <div className="hero-radar absolute inset-0 [mask-image:linear-gradient(105deg,transparent,black_60%)]">
-        <RadarIllustration
-          variant="hero"
-          seed="iamcooked-hero-radar"
-          className="opacity-60 dark:opacity-80"
-        />
-      </div>
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-background via-background/85 to-transparent"
-        aria-hidden
-      />
+    <section className="relative isolate overflow-hidden border-b border-border/60">
+      <VantaNet className="-z-10 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" />
 
-      <SectionContainer className="relative z-10 grid min-h-[80dvh] items-center gap-12 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:py-24">
-        <div className="hero-text max-w-2xl">
-          <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 font-mono text-[0.7rem] uppercase tracking-widest text-muted-foreground backdrop-blur-sm">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-            for the vibe-coding generation
-          </p>
-          <h1 className="text-4xl font-semibold leading-[1.05] tracking-tighter text-balance sm:text-5xl lg:text-6xl">
-            Your AI agent installed 247 packages. Are you cooked?
-          </h1>
-          <p className="mt-6 max-w-[60ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
-            You shipped fast. Real fast. iamcooked does the part you skipped —
-            it checks what your stack actually pulled in, tells you in plain
-            English whether you&apos;re fine or fried, and hands you the fix. No
-            panic, no jargon, receipts included.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <MagneticButton size="lg" className="h-12 px-6" asChild>
-              <Link href="/scan">
-                <Upload className="h-4 w-4" weight="bold" aria-hidden />
-                Am I cooked?
-              </Link>
-            </MagneticButton>
-            <Button variant="contrast" size="lg" className="h-12 px-6" asChild>
-              <Link href="/incidents">
-                See the latest drama
-                <ArrowRight className="h-4 w-4" weight="bold" aria-hidden />
-              </Link>
-            </Button>
-          </div>
-          <p className="mt-6 font-mono text-xs text-muted-foreground/80">
-            OSV · GitHub Advisories · CISA KEV — every verdict is source-backed, never vibes
-          </p>
+      <SectionContainer size="wide" className="pointer-events-none grid min-h-[100dvh] items-center gap-14 pb-20 pt-36 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pt-32 [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
+        <div className="max-w-2xl">
+          <Reveal blur={false} distance={10}>
+            <Link
+              href="/tools"
+              className="group inline-flex items-center gap-2 rounded-full border border-border bg-card py-1 pl-1 pr-3 text-xs transition-colors hover:border-primary/50"
+            >
+              <span className="rounded-full bg-primary px-2 py-0.5 font-medium text-primary-foreground">New</span>
+              <ScrambleText text="Tool Watch: is your AI stack in a CVE?" className="font-mono text-muted-foreground" />
+              <ArrowRight className="h-3 w-3 text-muted-foreground transition-transform group-hover:translate-x-0.5" weight="bold" aria-hidden />
+            </Link>
+          </Reveal>
+
+          <SplitText
+            text="Your AI agent installed 247 packages. Are you cooked?"
+            highlight={[8]}
+            className="mt-6 text-5xl font-semibold leading-[1.06] tracking-tight sm:text-6xl lg:text-[4.5rem]"
+          />
+
+          <Reveal delay={0.5}>
+            <p className="mt-6 max-w-[56ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
+              iamcooked checks your dependencies, your MCP servers and the AI tools themselves for CVEs and
+              malware. You get plain English and the exact fix command. No panic, no jargon, receipts included.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.65}>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <MagneticButton size="lg" className="h-12 px-6" asChild>
+                <Link href="/scan">
+                  <Upload className="h-4 w-4" weight="bold" aria-hidden />
+                  Am I cooked?
+                </Link>
+              </MagneticButton>
+              <Button variant="outline" size="lg" className="h-12 bg-card px-6" asChild>
+                <Link href="/mcp">
+                  Check my MCP servers
+                  <ArrowRight className="h-4 w-4" weight="bold" aria-hidden />
+                </Link>
+              </Button>
+            </div>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <CopyCommand command="npx iamcooked" className="w-full max-w-[16rem] bg-card" />
+              <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                <ShieldCheck className="h-4 w-4 text-severity-safe" weight="bold" aria-hidden />
+                Free · open source · no signup
+              </p>
+            </div>
+          </Reveal>
         </div>
 
-        <div className="hero-preview relative">
-          <ProductPreview />
-        </div>
+        <Reveal delay={0.35} direction="left" distance={40} className="relative">
+          <Parallax speed={-12}>
+            <div className="relative">
+              <Terminal lines={DEMO} />
+              <div className="absolute -bottom-10 right-6 hidden rounded-xl border border-border bg-card p-3 shadow-xl sm:block">
+                <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Verdict board</p>
+                <SplitFlapText
+                  words={["NOT COOKED", "TOASTY", "WELL DONE", "BURNT"]}
+                  interval={2600}
+                  length={10}
+                  className="text-lg sm:text-lg"
+                />
+              </div>
+            </div>
+          </Parallax>
+        </Reveal>
       </SectionContainer>
     </section>
   );

@@ -8,14 +8,26 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
 import { addPendingScan } from "@/components/scan/ScanClaimOnAuth";
+import Link from "next/link";
 import { Upload, FileCode, WarningCircle } from "@phosphor-icons/react";
+import { CopyCommand } from "@/components/check/CopyCommand";
 import { SkeletonBlock } from "@/components/feedback";
 
 const ACCEPTED_FORMATS = [
   { name: "package-lock.json", description: "npm" },
   { name: "pnpm-lock.yaml", description: "pnpm" },
   { name: "yarn.lock", description: "Yarn" },
+  { name: "bun.lock", description: "Bun" },
+  { name: "requirements.txt", description: "pip" },
+  { name: "poetry.lock", description: "Poetry" },
+  { name: "uv.lock", description: "uv" },
+  { name: "go.mod", description: "Go" },
+  { name: "Cargo.lock", description: "Rust" },
+  { name: "Gemfile.lock", description: "Ruby" },
+  { name: "composer.lock", description: "PHP" },
 ];
+
+const MCP_FILE = /(^|[./_-])mcp(_config)?\.json$|claude_desktop_config\.json$/i;
 
 const MAX_FILE_SIZE_MB = 10;
 
@@ -32,6 +44,8 @@ export function ScanUploadDropzone() {
     setError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   }, []);
+
+  const isMcp = !!file && MCP_FILE.test(file.name);
 
   const handleUpload = useCallback(async () => {
     if (!file) return;
@@ -85,7 +99,7 @@ export function ScanUploadDropzone() {
         <input
           ref={fileInputRef}
           type="file"
-          accept=".json,.yaml,.yml,.lock"
+          accept=".json,.yaml,.yml,.lock,.txt,.mod"
           className="hidden"
           onChange={(e) => {
             const selected = e.target.files?.[0];
@@ -123,7 +137,20 @@ export function ScanUploadDropzone() {
       </motion.button>
 
       <AnimatePresence>
-        {file && !isUploading && (
+        {file && isMcp && (
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-6">
+            <Card className="border-primary/30 bg-primary/5">
+              <CardContent className="p-4 text-sm">
+                That&apos;s an MCP config. Use the{" "}
+                <Link href="/mcp" className="font-medium underline underline-offset-4">
+                  MCP checker
+                </Link>{" "}
+                instead. It runs in your browser, so any API keys in the file never leave your machine.
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+        {file && !isMcp && !isUploading && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -162,6 +189,15 @@ export function ScanUploadDropzone() {
       <p className="mt-8 text-center text-xs text-muted-foreground">
         Max file size: {MAX_FILE_SIZE_MB}MB. Your lockfile is not stored after processing.
       </p>
+
+      <div className="mt-10 rounded-2xl border border-border bg-card p-5">
+        <p className="text-sm font-medium">Monorepo or several services? Scan every lockfile at once.</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          The CLI finds every lockfile in your repo, plus your MCP configs, and runs locally. Only package names
+          and versions leave your machine.
+        </p>
+        <CopyCommand command="npx iamcooked" className="mt-3" />
+      </div>
     </div>
   );
 }

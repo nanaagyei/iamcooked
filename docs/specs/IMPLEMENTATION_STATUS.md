@@ -14,6 +14,22 @@ iamcooked MVP is launch-ready after pre-launch gap closure: personalized digests
 - **Schema**: added `AgentSession`, `AgentInstalledPackage`, `FixTask`; extended `ScanFinding` with `reachable`, `status`, `cveId`, `fixedVersion`.
 - **Data**: seeded a demo workspace (5 projects, 8 agent sessions, scans/findings, fix tasks). Dashboard queries fall back to the demo workspace for users with no data of their own.
 
+## Vulnerability-first rebuild (2026-11-03)
+
+The product was refocused on its core promise for vibecoders: **know when the tools and packages you
+use are in a CVE**.
+
+- **New `@iamcooked/core`** (dependency-free): OSV client with record hydration (batch queries only return
+  IDs), CVSS v3 scoring from vectors, per-release-line fix selection, alias de-dup, malware detection,
+  package-manager-aware fix commands, scoring + verdict, and the Tool Watch catalog.
+- **Scanner fixes**: npm v7+ lockfiles (names were `node_modules/x`), pnpm v9 keys (parsed to 0 deps),
+  Yarn Berry. **New ecosystems**: Bun, pip/requirements, Poetry, uv, Pipenv, Go (incl. stdlib), Cargo,
+  Bundler, Composer. **New MCP config analyzer**.
+- **New CLI** (`packages/cli`, published as `iamcooked`): `scan`, `mcp`, `tools`, `doctor`; text/JSON/
+  Markdown/SARIF; `--fail-on` for CI. Root `action.yml` wraps it as a GitHub Action.
+- **Web**: `/tools` (Tool Watch), `/mcp` (browser-side MCP checker), `POST /api/check`, daily
+  watchlist advisory emails (`/api/cron/digest?type=advisories`), multi-ecosystem uploads.
+
 ## Phase Status
 
 | Phase | Status | Notes |
@@ -26,7 +42,7 @@ iamcooked MVP is launch-ready after pre-launch gap closure: personalized digests
 | 05 Dashboard | Verified | Scan claim-on-sign-in links anonymous scans to user |
 | 06 Email Digest | Verified | Interests filter, AI subject, lesson + ecosystem summary |
 | 07 Admin Review | Verified | All 6 warning types in admin panel |
-| 08 Security Hardening | Verified | See [PHASE_08_SECURITY_HARDENING.md](docs/implementation/PHASE_08_SECURITY_HARDENING.md) |
+| 08 Security Hardening | Verified | See [PHASE_08_SECURITY_HARDENING.md](../implementation/PHASE_08_SECURITY_HARDENING.md) |
 
 ## Routes
 
@@ -75,7 +91,7 @@ iamcooked MVP is launch-ready after pre-launch gap closure: personalized digests
 
 ## QA
 
-- Report: [docs/QA_REPORT.md](docs/QA_REPORT.md)
+- Report: [docs/QA_REPORT.md](../QA_REPORT.md)
 - Last QA pass: 2026-06-25
 
 ## Launch Checklist
@@ -101,6 +117,7 @@ Cron schedules in `vercel.json`:
 
 - Weekly digest: Mondays 09:00 UTC
 - Critical alerts: Daily 08:00 UTC
+- Watchlist advisory alerts: Daily (`/api/cron/digest?type=advisories`)
 
 ## Environment Variables
 

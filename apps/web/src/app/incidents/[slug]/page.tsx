@@ -52,7 +52,7 @@ export default async function IncidentDetailPage({ params }: Props) {
       <div className="relative overflow-hidden bg-background">
         <section className="relative overflow-hidden">
           <PageBackdrop variant="incident-hero" seed={slug} />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/88 to-background" />
+          <div className="absolute inset-0 bg-background/85" />
           <SectionContainer size="narrow" className="relative py-16 lg:py-20">
             <IncidentDetailHeader
               title={incident.title}
@@ -124,7 +124,7 @@ export default async function IncidentDetailPage({ params }: Props) {
             </div>
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-[var(--shadow-diffusion)]">
               <PageBackdrop variant="incident-context" seed={`${slug}-context`} className="opacity-100" />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+              
             </div>
           </section>
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { MarketingLayout, SectionContainer } from "@/components/layout";
+import { MarketingLayout, PageHero, SectionContainer } from "@/components/layout";
+import { Reveal } from "@/components/motion";
 import { PageBackdrop } from "@/components/layout/PageBackdrop";
-import { RadarIllustration } from "@/components/ui/radar-illustration";
 import { LearnContentCard } from "@/components/learn/LearnContentCard";
 import { LearnContentGrid } from "@/components/learn/LearnContentGrid";
 import { MagneticButton } from "@/components/ui/magnetic-button";
@@ -14,41 +14,26 @@ export default function LearnIndexPage() {
   const featured = getFeaturedLearnArticle();
 
   return (
-    <MarketingLayout>
+    <MarketingLayout overlap>
       <div className="relative overflow-hidden bg-background">
-        <section className="relative overflow-hidden border-b border-border/60">
-          <PageBackdrop variant="learn-hero" seed="learn-hub-hero" />
-          <div className="absolute inset-y-0 right-0 hidden w-1/2 [mask-image:linear-gradient(to_left,black,transparent)] lg:block">
-            <RadarIllustration
-              variant="ambient"
-              seed="learn-hub-radar"
-              className="opacity-50 dark:opacity-70"
-            />
+        <PageHero
+          eyebrow="Learn"
+          title="Security explained for builders who ship fast"
+          highlight={[0, 1]}
+          description="Plain-English guides without the panic UX. Start with the fundamentals, read close analyses of recent supply-chain incidents, then keep the habits that keep your stack defensible."
+        >
+          <div className="mt-8">
+            <MagneticButton asChild>
+              <Link href="/scan">Scan your lockfile</Link>
+            </MagneticButton>
           </div>
-          <SectionContainer className="relative py-20 lg:py-28">
-            <p className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-primary">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-              Learn
-            </p>
-            <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tighter sm:text-5xl">
-              Guides and articles for builders who ship fast
-            </h1>
-            <p className="mt-4 max-w-[60ch] text-base leading-relaxed text-muted-foreground">
-              Plain-English security education without the panic UX. Start with
-              fundamentals, read close analyses of recent npm incidents, then keep
-              the habits that keep your stack defensible.
-            </p>
-            <div className="mt-8">
-              <MagneticButton variant="contrast" asChild>
-                <Link href="/scan">Scan your lockfile</Link>
-              </MagneticButton>
-            </div>
-          </SectionContainer>
-        </section>
+        </PageHero>
 
         {featured && (
-          <SectionContainer className="relative pb-16 pt-4 lg:pb-20">
-            <LearnContentCard article={featured} layout="featured" />
+          <SectionContainer className="relative pb-16 pt-12 lg:pb-20">
+            <Reveal>
+              <LearnContentCard article={featured} layout="featured" />
+            </Reveal>
           </SectionContainer>
         )}
 

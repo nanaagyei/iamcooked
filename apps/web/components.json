@@ -15,5 +15,9 @@
     "utils": "@/lib/utils",
     "ui": "@/components/ui",
     "lib": "@/lib"
+  },
+  "registries": {
+    "@bklit": "https://bklit.com/r/{name}.json",
+    "@kokonutui": "https://kokonutui.com/r/{name}.json"
   }
 }

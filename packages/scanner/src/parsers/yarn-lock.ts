@@ -40,7 +40,8 @@ export function parseYarnLock(raw: string): NormalizedDependency[] {
     const firstDescriptor = header.split(",")[0]!.trim().replace(/"/g, "");
     const name = extractNameFromDescriptor(firstDescriptor);
 
-    if (!name) {
+    // Skip Yarn Berry metadata and workspace/link/patch entries
+    if (!name || header === "__metadata" || /@(workspace|link|portal|file):/.test(firstDescriptor)) {
       i++;
       continue;
     }
@@ -52,8 +53,10 @@ export function parseYarnLock(raw: string): NormalizedDependency[] {
       const metaLine = lines[i]!;
       if (metaLine === "" || metaLine.startsWith("  ")) {
         const trimmed = metaLine.trim();
-        if (trimmed.startsWith("version ") && !version) {
-          version = trimmed.slice("version ".length).replace(/^"|"$/g, "").trim();
+        // Yarn v1: `version "1.2.3"` — Yarn Berry (v2+): `version: 1.2.3`
+        const m = trimmed.match(/^version:?\s+"?([^"\s]+)"?$/);
+        if (m && !version) {
+          version = m[1]!;
         }
         i++;
       } else {

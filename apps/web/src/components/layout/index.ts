@@ -8,3 +8,4 @@ export {
   PageHeader,
   ResponsiveGrid,
 } from "@iamcooked/ui";
+export { PageHero } from "./PageHero";

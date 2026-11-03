@@ -1,71 +1,80 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { GithubLogo, ShieldCheck, BellRinging, ClockCounterClockwise, Binoculars } from "@phosphor-icons/react/dist/ssr";
 import { auth, signIn } from "@/lib/auth";
 import { MarketingLayout, SectionContainer } from "@/components/layout";
-import { PageBackdrop } from "@/components/layout/PageBackdrop";
-import { RadarIllustration } from "@/components/ui/radar-illustration";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GithubLogo, ShieldCheck } from "@phosphor-icons/react/dist/ssr";
-import { redirect } from "next/navigation";
+import { GridBackground, Parallax, Reveal, SplitText, Stagger, StaggerItem } from "@/components/motion";
+
+const PERKS = [
+  { icon: ClockCounterClockwise, text: "Keep every scan and compare over time" },
+  { icon: Binoculars, text: "Watch packages and AI tools you care about" },
+  { icon: BellRinging, text: "Get an email the day a new CVE lands" },
+  { icon: ShieldCheck, text: "Read-only profile access. Lockfiles are never stored" },
+];
+
+export const metadata = { title: "Sign in" };
 
 export default async function SignInPage() {
   const session = await auth();
-
-  if (session?.user) {
-    redirect("/dashboard");
-  }
+  if (session?.user) redirect("/dashboard");
 
   return (
-    <MarketingLayout>
-      <div className="relative overflow-hidden">
-        <PageBackdrop variant="hero" seed="signin-hero" />
-        <div className="absolute inset-y-0 right-0 hidden w-[45%] [mask-image:linear-gradient(to_left,black,transparent)] lg:block">
-          <RadarIllustration variant="ambient" seed="signin-radar" className="opacity-40 dark:opacity-60" />
-        </div>
-        <SectionContainer className="relative grid min-h-[80dvh] items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
-        <div className="max-w-lg">
-          <p className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-primary">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-            Secure workspace
-          </p>
-          <h1 className="mt-4 text-3xl font-semibold tracking-tighter sm:text-4xl">
-            Save scans, track risk, and get alerts that match your stack.
-          </h1>
-          <p className="mt-4 max-w-[65ch] leading-relaxed text-muted-foreground">
-            Sign in with GitHub to keep scan history, manage a package watchlist,
-            and receive digest emails when new incidents affect your dependencies.
-          </p>
-          <ul className="mt-8 space-y-3 text-sm text-muted-foreground">
-            <li className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-primary" weight="bold" aria-hidden />
-              Read-only GitHub profile access
-            </li>
-            <li className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-primary" weight="bold" aria-hidden />
-              Lockfile contents are not stored
-            </li>
-          </ul>
-        </div>
-        <Card className="relative mx-auto w-full max-w-md rounded-2xl border-border bg-card/95 shadow-[var(--shadow-diffusion)] backdrop-blur-sm">
-          <CardHeader className="text-center">
-            <CardTitle className="text-xl tracking-tight">Sign in to iamcooked</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form
-              action={async () => {
-                "use server";
-                await signIn("github", { redirectTo: "/dashboard" });
-              }}
-            >
-              <Button type="submit" className="h-12 w-full" size="lg">
-                <GithubLogo className="h-5 w-5" weight="bold" aria-hidden />
-                Continue with GitHub
-              </Button>
-            </form>
-            <p className="mt-4 text-center text-xs leading-relaxed text-muted-foreground">
-              By continuing, you agree to our terms and privacy policy.
-            </p>
-          </CardContent>
-        </Card>
+    <MarketingLayout overlap>
+      <div className="relative isolate overflow-hidden">
+        <Parallax speed={30} className="absolute inset-0 -z-10">
+          <GridBackground />
+        </Parallax>
+        <SectionContainer className="grid min-h-[100dvh] items-center gap-14 pb-20 pt-32 lg:grid-cols-[1.1fr_1fr]">
+          <div className="max-w-lg">
+            <Reveal blur={false} distance={10}>
+              <p className="font-mono text-xs uppercase tracking-widest text-primary">Your workspace</p>
+            </Reveal>
+            <SplitText text="Save scans, watch your stack, and hear about it first." highlight={[6, 7]} className="mt-4 text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl" />
+            <Stagger as="ul" className="mt-10 space-y-4">
+              {PERKS.map(({ icon: Icon, text }) => (
+                <StaggerItem as="li" key={text} className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card">
+                    <Icon className="h-4 w-4 text-primary" weight="duotone" aria-hidden />
+                  </span>
+                  {text}
+                </StaggerItem>
+              ))}
+            </Stagger>
+          </div>
+
+          <Reveal delay={0.25} direction="left">
+            <div className="relative mx-auto w-full max-w-md rounded-3xl border border-border bg-card/80 p-8 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-primary-foreground">
+                ic
+              </div>
+              <h2 className="mt-6 text-center text-2xl font-semibold tracking-tight">Sign in to iamcooked</h2>
+              <p className="mt-2 text-center text-sm text-muted-foreground">Free forever. One click with GitHub.</p>
+              <form
+                className="mt-8"
+                action={async () => {
+                  "use server";
+                  await signIn("github", { redirectTo: "/dashboard" });
+                }}
+              >
+                <Button type="submit" className="h-12 w-full text-base" size="lg">
+                  <GithubLogo className="h-5 w-5" weight="bold" aria-hidden />
+                  Continue with GitHub
+                </Button>
+              </form>
+              <p className="mt-6 text-center text-xs leading-relaxed text-muted-foreground">
+                By continuing you agree to our{" "}
+                <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">
+                  terms
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
+                  privacy policy
+                </Link>
+                .
+              </p>
+            </div>
+          </Reveal>
         </SectionContainer>
       </div>
     </MarketingLayout>

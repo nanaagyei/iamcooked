@@ -7,9 +7,8 @@ import {
   Sparkle,
   GitBranch,
 } from "@phosphor-icons/react/dist/ssr";
-import Image from "next/image";
-import { MarketingLayout, SectionContainer } from "@/components/layout";
-import { PageBackdrop } from "@/components/layout/PageBackdrop";
+import { Stagger, StaggerItem } from "@/components/motion";
+import { MarketingLayout, PageHero, SectionContainer } from "@/components/layout";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 
 const principles = [
@@ -75,51 +74,30 @@ function Section({
 
 export default function SecurityPage() {
   return (
-    <MarketingLayout>
+    <MarketingLayout overlap>
       <div className="relative overflow-hidden bg-background">
-        <section className="relative overflow-hidden border-b border-border/60">
-          <PageBackdrop variant="incident-hero" seed="security-hero" />
-          <div className="absolute inset-y-0 right-0 hidden w-1/2 [mask-image:linear-gradient(to_left,black,transparent)] lg:block">
-            <Image
-              src="/images/security-header.png"
-              alt=""
-              fill
-              priority
-              sizes="50vw"
-              className="object-cover opacity-80"
-            />
-          </div>
-          <SectionContainer className="relative py-20 lg:py-24">
-            <p className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-primary">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-              Security
-            </p>
-            <h1 className="mt-4 max-w-2xl text-4xl font-semibold tracking-tighter text-foreground sm:text-5xl">
-              How we handle your data, and our own
-            </h1>
-            <p className="mt-4 max-w-[60ch] text-base leading-relaxed text-muted-foreground sm:text-lg">
-              iamcooked exists to make supply-chain risk legible. We hold our own
-              platform to the standard we ask of yours: minimal data, no code
-              execution, and claims you can trace back to a source.
-            </p>
-          </SectionContainer>
-        </section>
+        <PageHero
+          eyebrow="Security"
+          title="How we handle your data, and our own"
+          highlight={[5, 6]}
+          description="iamcooked exists to make supply-chain risk legible. We hold our own platform to the standard we ask of yours: minimal data, no code execution, and claims you can trace back to a source."
+        />
 
         <SectionContainer className="py-12 lg:py-16">
-          <ul className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+          <Stagger as="ul" className="grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
             {principles.map((p) => {
               const Icon = p.icon;
               return (
-                <li key={p.label} className="bg-card p-5">
+                <StaggerItem as="li" key={p.label} className="bg-card p-5">
                   <Icon className="h-5 w-5 text-primary" weight="bold" aria-hidden />
                   <p className="mt-3 font-mono text-xs uppercase tracking-wide text-muted-foreground">
                     {p.label}
                   </p>
                   <p className="mt-1 text-sm font-medium text-foreground">{p.value}</p>
-                </li>
+                </StaggerItem>
               );
             })}
-          </ul>
+          </Stagger>
         </SectionContainer>
 
         <SectionContainer className="grid gap-14 pb-20 lg:grid-cols-[minmax(0,1fr)_220px] lg:gap-20 lg:pb-28">
@@ -235,7 +213,6 @@ export default function SecurityPage() {
             </Section>
 
             <div className="relative overflow-hidden rounded-2xl border border-border bg-card px-6 py-10 sm:px-10">
-              <PageBackdrop variant="incident-cta" seed="security-cta" className="opacity-60" />
               <div className="relative z-10 max-w-lg">
                 <h3 className="text-xl font-semibold tracking-tight text-foreground">
                   See it on your own stack
