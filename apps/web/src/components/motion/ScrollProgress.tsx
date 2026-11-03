@@ -12,7 +12,7 @@ export function ScrollProgress({ className }: { className?: string }) {
       aria-hidden
       style={{ scaleX }}
       className={cn(
-        "fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-gradient-to-r from-primary/40 via-primary to-amber-300",
+        "fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-primary",
         className,
       )}
     />

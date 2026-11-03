@@ -31,14 +31,3 @@ export function DotBackground({ className }: { className?: string }) {
     />
   );
 }
-
-/** Slow-drifting ember glow orbs. */
-export function GlowOrbs({ className }: { className?: string }) {
-  return (
-    <div aria-hidden className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}>
-      <div className="orb absolute -left-[10%] -top-[20%] h-[42rem] w-[42rem] rounded-full bg-primary/20 blur-[120px] dark:bg-primary/15" />
-      <div className="orb orb-delay absolute -right-[15%] top-[10%] h-[34rem] w-[34rem] rounded-full bg-amber-400/15 blur-[120px] dark:bg-amber-500/10" />
-      <div className="orb orb-slow absolute bottom-[-30%] left-[30%] h-[30rem] w-[30rem] rounded-full bg-rose-500/10 blur-[120px]" />
-    </div>
-  );
-}

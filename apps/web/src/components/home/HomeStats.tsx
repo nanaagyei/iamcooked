@@ -17,7 +17,7 @@ export function HomeStats() {
         <Stagger className="grid grid-cols-2 divide-border/60 lg:grid-cols-4 lg:divide-x">
           {stats.map((s) => (
             <StaggerItem key={s.label} className="px-4 py-10 text-center sm:py-12">
-              <p className="text-4xl font-semibold tracking-tighter sm:text-5xl">
+              <p className="text-4xl font-semibold tracking-tight sm:text-5xl">
                 <AnimatedCounter value={s.value} suffix={s.suffix} />
               </p>
               <p className="mt-2 text-sm font-medium">{s.label}</p>

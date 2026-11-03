@@ -23,7 +23,7 @@ export function HomeLatest({ incident }: { incident: IncidentCardProps }) {
               Live intelligence
             </p>
           </Reveal>
-          <SplitText as="h2" onScroll text="The latest supply-chain drama, explained calmly." className="mt-4 text-3xl font-semibold tracking-tighter sm:text-5xl" />
+          <SplitText as="h2" onScroll text="The latest supply-chain drama, explained calmly." className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl" />
           <Reveal delay={0.2}>
             <p className="mt-4 max-w-[56ch] leading-relaxed text-muted-foreground">
               Source-backed briefs written like a friend texting you: what happened, who&apos;s affected, and whether

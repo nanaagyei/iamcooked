@@ -10,12 +10,12 @@ export type TerminalLine =
   | { kind: "gap" };
 
 const TONE: Record<string, string> = {
-  muted: "text-muted-foreground",
+  muted: "text-white/50",
   critical: "text-severity-critical font-semibold",
   high: "text-severity-high",
   safe: "text-severity-safe",
-  accent: "text-primary",
-  bold: "text-foreground font-semibold",
+  accent: "text-[#f9743b]",
+  bold: "text-white font-semibold",
 };
 
 /**
@@ -57,7 +57,7 @@ export function Terminal({ lines, className, title = "zsh — iamcooked" }: { li
     <div
       ref={ref}
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-border bg-[#0f0d0b] text-[#f2ede7] shadow-[0_40px_120px_-40px_rgba(249,116,59,0.35)]",
+        "relative overflow-hidden rounded-2xl border border-border bg-[#0f0d0b] text-[#f2ede7] shadow-[0_40px_100px_-40px_rgba(0,0,0,0.6)]",
         className,
       )}
       role="img"

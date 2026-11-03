@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "@/lib/cooked";
 import { toast } from "@/lib/toast";
 import { FindingRow } from "@/components/check/FindingRow";
+import { BarSparkline } from "@/components/charts/sparkline";
 import { checkPackages, type CheckResponse } from "@/components/check/types";
 
 type Severity = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" | "UNKNOWN";
@@ -30,6 +31,7 @@ export interface ToolCardData {
   last90Days: number;
   last365Days: number;
   criticalOrHigh365: number;
+  monthly: number[];
   error?: boolean;
   latest: {
     id: string;
@@ -152,7 +154,7 @@ function ToolCard({ tool, signedIn }: { tool: ToolCardData; signedIn: boolean })
   };
 
   return (
-    <article className="flex h-full min-w-0 flex-col rounded-2xl border border-border bg-card p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.08)] transition-[border-color,box-shadow] duration-300 hover:border-foreground/20 hover:shadow-[0_30px_60px_-30px_rgba(249,116,59,0.35)]">
+    <article className="flex h-full min-w-0 flex-col rounded-2xl border border-border bg-card p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.08)] transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-[0_30px_60px_-30px_rgba(0,0,0,0.45)]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-base font-semibold tracking-tight">
@@ -183,6 +185,25 @@ function ToolCard({ tool, signedIn }: { tool: ToolCardData; signedIn: boolean })
           </div>
         ))}
       </dl>
+
+      {tool.monthly.length === 12 && (
+        <div className="mt-4">
+          <div className="mb-1 flex items-center justify-between text-[11px] text-muted-foreground">
+            <span>Advisories per month</span>
+            <span className="font-mono">last 12 mo</span>
+          </div>
+          <BarSparkline
+            data={tool.monthly.map((value, i) => ({ month: i, value }))}
+            dataKey="value"
+            height={36}
+            barGap={3}
+            barRadius={2}
+            color={tool.last90Days > 0 ? "var(--primary)" : "var(--muted-foreground)"}
+            yDomain={[0, Math.max(3, ...tool.monthly)]}
+            aria-label={`${tool.name}: ${tool.last365Days} advisories in the last 12 months`}
+          />
+        </div>
+      )}
 
       {tool.latest ? (
         <a
@@ -247,8 +268,8 @@ export function ToolWatchClient({
 
   return (
     <div>
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="-mx-1 flex flex-wrap gap-1.5" role="tablist" aria-label="Tool categories">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="-mx-1 flex min-w-0 gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none]" role="tablist" aria-label="Tool categories">
           {[{ id: "all", label: "All" }, ...categories].map((c) => (
             <button
               key={c.id}
@@ -256,7 +277,7 @@ export function ToolWatchClient({
               aria-selected={category === c.id}
               onClick={() => setCategory(c.id)}
               className={cn(
-                "relative isolate rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "relative isolate shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 category === c.id ? "border-primary/40 text-foreground" : "border-border bg-card text-muted-foreground hover:text-foreground",
               )}
             >

@@ -1,44 +1,46 @@
 "use client";
 
 import { useRef, type ReactNode, type MouseEvent } from "react";
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 /**
- * Card with a cursor-following glow and border highlight
- * (inspired by Aceternity UI's "Card Spotlight", MIT).
+ * Card that tilts towards the cursor in 3D and lifts its border on hover
+ * (idea from React Bits' "Tilted Card"; our own implementation). Solid colours only.
  */
-export function SpotlightCard({
-  children,
-  className,
-  glow = "var(--primary)",
-}: {
-  children: ReactNode;
-  className?: string;
-  glow?: string;
-}) {
+export function SpotlightCard({ children, className, tilt = 5 }: { children: ReactNode; className?: string; tilt?: number }) {
   const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const px = useMotionValue(0.5);
+  const py = useMotionValue(0.5);
+  const rx = useSpring(useTransform(py, [0, 1], [tilt, -tilt]), { stiffness: 200, damping: 20 });
+  const ry = useSpring(useTransform(px, [0, 1], [-tilt, tilt]), { stiffness: 200, damping: 20 });
+
   const onMove = (e: MouseEvent<HTMLDivElement>) => {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    el.style.setProperty("--my", `${e.clientY - r.top}px`);
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    px.set((e.clientX - r.left) / r.width);
+    py.set((e.clientY - r.top) / r.height);
   };
+  const reset = () => {
+    px.set(0.5);
+    py.set(0.5);
+  };
+
   return (
-    <div
+    <motion.div
       ref={ref}
-      onMouseMove={onMove}
-      style={{ ["--glow" as string]: glow }}
+      onMouseMove={reduce ? undefined : onMove}
+      onMouseLeave={reset}
+      style={reduce ? undefined : { rotateX: rx, rotateY: ry, transformPerspective: 1000 }}
       className={cn(
-        "group/spot relative overflow-hidden rounded-2xl border border-border bg-card transition-[border-color,transform] duration-300",
-        "before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100",
-        "before:bg-[radial-gradient(420px_circle_at_var(--mx,50%)_var(--my,50%),color-mix(in_oklab,var(--glow)_14%,transparent),transparent_60%)]",
-        "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:p-px after:opacity-0 after:transition-opacity after:duration-300 hover:after:opacity-100",
-        "after:[background:radial-gradient(260px_circle_at_var(--mx,50%)_var(--my,50%),color-mix(in_oklab,var(--glow)_60%,transparent),transparent_70%)] after:[mask:linear-gradient(#000_0_0)_content-box_exclude,linear-gradient(#000_0_0)]",
+        "group/spot relative overflow-hidden rounded-2xl border border-border bg-card transition-[border-color,box-shadow] duration-300",
+        "hover:border-primary/50 hover:shadow-[0_24px_60px_-30px_rgba(0,0,0,0.45)]",
         className,
       )}
     >
+      <span aria-hidden className="pointer-events-none absolute left-0 top-0 h-px w-0 bg-primary transition-[width] duration-500 group-hover/spot:w-full" />
       <div className="relative z-10 h-full">{children}</div>
-    </div>
+    </motion.div>
   );
 }

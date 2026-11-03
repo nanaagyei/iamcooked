@@ -51,7 +51,7 @@ export function HomeBento() {
           <Reveal>
             <p className="font-mono text-xs uppercase tracking-widest text-primary">Three ways to get cooked</p>
           </Reveal>
-          <SplitText as="h2" onScroll text="Your code, your agent's plugins, and the tools themselves." highlight={[4, 5]} className="mt-3 text-3xl font-semibold tracking-tighter sm:text-5xl" />
+          <SplitText as="h2" onScroll text="Your code, your agent's plugins, and the tools themselves." highlight={[4, 5]} className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl" />
           <Reveal delay={0.2}>
             <p className="mt-4 text-muted-foreground">
               Vibecoding moved the attack surface. It&apos;s not only your dependencies anymore. It&apos;s the MCP

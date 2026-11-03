@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { ECOSYSTEM_LABEL, TOOL_CATEGORY_LABEL, type ToolCategory } from "@iamcooked/core";
 import { MarketingLayout, PageHero, SectionContainer } from "@/components/layout";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
-import { BorderBeam, Reveal } from "@/components/motion";
+import { Reveal } from "@/components/motion";
 import { ToolWatchClient, type ToolCardData } from "@/components/tools/ToolWatchClient";
 import { CopyCommand } from "@/components/check/CopyCommand";
 import { SeverityBadge } from "@/components/badges";
@@ -37,6 +37,7 @@ export default async function ToolsPage() {
     criticalOrHigh365: s.criticalOrHigh365,
     error: s.error,
     latest: s.latest,
+    monthly: s.monthly ?? [],
   }));
 
   const recent = statuses
@@ -57,7 +58,6 @@ export default async function ToolsPage() {
         description="Live advisory status for the agents, MCP servers, SDKs and frameworks vibecoders actually run. Check your version in one click, or get an email the day a new CVE lands."
         aside={
           <div className="relative rounded-2xl border border-border bg-card/80 p-5 backdrop-blur">
-            <BorderBeam duration={9} />
             <p className="text-sm font-medium">Check everything installed on your machine</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Detects Claude Code, Codex, Gemini CLI, Aider, global npm packages and your MCP configs.

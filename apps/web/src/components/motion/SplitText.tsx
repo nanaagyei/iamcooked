@@ -8,7 +8,7 @@ interface SplitTextProps {
   text: string;
   as?: ElementType;
   className?: string;
-  /** Words (by index) to render in the accent gradient. */
+  /** Words (by index) to render in the accent colour. */
   highlight?: number[];
   delay?: number;
   /** Animate when scrolled into view instead of on mount. */
@@ -57,7 +57,7 @@ export function SplitText({ text, as: Tag = "h1", className, highlight = [], del
               data-word
               className={cn(
                 "inline-block will-change-transform",
-                highlight.includes(i) && "bg-gradient-to-br from-primary via-orange-400 to-amber-300 bg-clip-text text-transparent",
+                highlight.includes(i) && "text-primary",
               )}
             >
               {w}

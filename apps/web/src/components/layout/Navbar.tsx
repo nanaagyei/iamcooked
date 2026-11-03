@@ -35,7 +35,7 @@ function isNavActive(pathname: string, href: string) {
 export function Logo({ className }: { className?: string }) {
   return (
     <Link href="/" className={cn("group inline-flex items-center gap-2 font-semibold tracking-tight", className)} aria-label="iamcooked home">
-      <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-primary to-amber-400 text-[13px] font-bold text-primary-foreground shadow-[0_6px_20px_-6px_var(--primary)]">
+      <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-lg bg-primary text-[13px] font-bold text-primary-foreground">
         <span className="transition-transform duration-300 group-hover:-translate-y-6">ic</span>
         <span className="absolute translate-y-6 transition-transform duration-300 group-hover:translate-y-0" aria-hidden>
           🔥

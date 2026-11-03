@@ -40,7 +40,7 @@ export default async function LearnPage({
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/80 to-background" />
+          <div className="absolute inset-0 bg-background/85" />
           <SectionContainer className="relative flex min-h-[52vh] flex-col justify-end pb-16 pt-28 lg:min-h-[58vh] lg:pb-20">
           <TextLink href="/learn" variant="muted">
             All guides
@@ -50,7 +50,7 @@ export default async function LearnPage({
               {learnCategoryLabels[article.category]} · {article.readTime}
               {article.dateline ? ` · ${article.dateline}` : ""}
             </p>
-            <h1 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tighter text-balance sm:text-4xl lg:text-5xl">
+            <h1 className="mt-2 max-w-3xl text-3xl font-semibold tracking-tight text-balance sm:text-4xl lg:text-5xl">
               {article.title}
             </h1>
             <p className="mt-4 max-w-[65ch] text-base leading-relaxed text-muted-foreground">
@@ -87,7 +87,7 @@ export default async function LearnPage({
                         seed={`learn-${slug}-${index}`}
                         className="opacity-100"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
+                      
                     </div>
                   </div>
                 </section>

@@ -4,12 +4,12 @@ import { SectionContainer } from "./SectionContainer";
 import { SplitText } from "@/components/motion/SplitText";
 import { Reveal } from "@/components/motion/Reveal";
 import { Parallax } from "@/components/motion/Parallax";
-import { GlowOrbs, GridBackground } from "@/components/motion/Backgrounds";
+import { GridBackground } from "@/components/motion/Backgrounds";
 
 interface PageHeroProps {
   eyebrow: string;
   title: string;
-  /** Word indexes of `title` to paint with the ember gradient. */
+  /** Word indexes of `title` to paint in the accent colour. */
   highlight?: number[];
   description?: ReactNode;
   /** Right-hand column (card, illustration, CTA). */
@@ -30,8 +30,6 @@ export function PageHero({ eyebrow, title, highlight, description, aside, childr
       <Parallax speed={30} className="absolute inset-0">
         <GridBackground />
       </Parallax>
-      <GlowOrbs className="opacity-70" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-background" aria-hidden />
       <SectionContainer
         className={cn(
           "relative grid gap-10 lg:items-end",
@@ -53,7 +51,7 @@ export function PageHero({ eyebrow, title, highlight, description, aside, childr
             text={title}
             highlight={highlight}
             className={cn(
-              "mt-5 font-semibold leading-[1.02] tracking-tighter",
+              "mt-5 font-semibold leading-[1.08] tracking-tight",
               size === "compact" ? "text-4xl sm:text-5xl" : "text-4xl sm:text-5xl lg:text-6xl",
             )}
           />

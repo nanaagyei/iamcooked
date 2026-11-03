@@ -49,10 +49,9 @@ export function PageBackdrop({
   seed = "iamcooked",
   className,
 }: PageBackdropProps) {
-  const cfg = variantConfig[variant];
-  // Seed only nudges the glow position so repeated surfaces feel distinct.
-  const jitter = (hashSeed(seed) % 16) - 8;
-  const glowX = Math.min(95, Math.max(5, cfg.x + jitter));
+  // Variant/seed are kept for API compatibility; the backdrop is now a plain dot grid.
+  void variantConfig[variant];
+  void hashSeed(seed);
 
   return (
     <div
@@ -72,14 +71,7 @@ export function PageBackdrop({
           opacity: 0.5,
         }}
       />
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `radial-gradient(ellipse ${cfg.size}% ${cfg.size}% at ${glowX}% ${cfg.y}%, color-mix(in oklab, var(--primary) ${Math.round(
-            cfg.intensity * 100,
-          )}%, transparent), transparent 60%)`,
-        }}
-      />
+
     </div>
   );
 }

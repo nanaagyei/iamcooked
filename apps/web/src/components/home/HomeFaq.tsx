@@ -37,7 +37,7 @@ export function HomeFaq() {
           <Reveal>
             <p className="font-mono text-xs uppercase tracking-widest text-primary">FAQ</p>
           </Reveal>
-          <SplitText as="h2" onScroll text="Questions people ask before they find out." className="mt-3 text-3xl font-semibold tracking-tighter sm:text-4xl" />
+          <SplitText as="h2" onScroll text="Questions people ask before they find out." className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl" />
         </div>
         <Reveal delay={0.1}>
           <Accordion type="single" collapsible className="w-full">

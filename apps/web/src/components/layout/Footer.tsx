@@ -37,10 +37,9 @@ export function Footer() {
       <SectionContainer className="relative pt-16">
         {/* CTA band */}
         <div className="relative overflow-hidden rounded-3xl border border-border bg-card/80 p-8 backdrop-blur sm:p-10">
-          <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-primary/25 blur-[90px]" aria-hidden />
           <div className="relative grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <div>
-              <h2 className="text-2xl font-semibold tracking-tighter sm:text-3xl">Find out if you&apos;re cooked in ten seconds.</h2>
+              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Find out if you&apos;re cooked in ten seconds.</h2>
               <p className="mt-2 max-w-md text-sm text-muted-foreground">
                 No signup, no API key. Runs locally, and only package names and versions leave your machine.
               </p>
@@ -117,7 +116,7 @@ export function Footer() {
 
       {/* Giant wordmark */}
       <div aria-hidden className="pointer-events-none relative -mb-[3vw] select-none overflow-hidden">
-        <p className="bg-gradient-to-b from-foreground/[0.09] to-transparent bg-clip-text text-center text-[19vw] font-bold leading-none tracking-tighter text-transparent">
+        <p className="text-center text-[19vw] font-bold leading-none tracking-tight text-foreground/[0.05]">
           iamcooked
         </p>
       </div>

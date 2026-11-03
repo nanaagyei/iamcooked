@@ -29,6 +29,8 @@ export interface ToolStatus {
   criticalOrHigh365: number;
   latest: ToolAdvisory | null;
   recent: ToolAdvisory[];
+  /** Advisories first published in each of the last 12 months (oldest first). */
+  monthly: number[];
   error?: boolean;
 }
 
@@ -52,6 +54,18 @@ function toAdvisory(rec: OsvRecord, tool: ToolEntry): ToolAdvisory {
     malware: rec.id.startsWith("MAL-"),
     url: id.startsWith("GHSA-") ? `https://github.com/advisories/${id}` : `https://osv.dev/vulnerability/${id}`,
   };
+}
+
+function monthlyCounts(advisories: ToolAdvisory[], now: number): number[] {
+  const end = new Date(now);
+  const buckets = new Array<number>(12).fill(0);
+  for (const a of advisories) {
+    if (!a.published) continue;
+    const d = new Date(a.published);
+    const diff = (end.getUTCFullYear() - d.getUTCFullYear()) * 12 + (end.getUTCMonth() - d.getUTCMonth());
+    if (diff >= 0 && diff < 12) buckets[11 - diff]! += 1;
+  }
+  return buckets;
 }
 
 async function loadToolStatuses(): Promise<ToolStatus[]> {
@@ -82,9 +96,10 @@ async function loadToolStatuses(): Promise<ToolStatus[]> {
           criticalOrHigh365: in365.filter((a) => a.severity === "CRITICAL" || a.severity === "HIGH").length,
           latest: advisories[0] ?? null,
           recent: advisories.slice(0, 5),
+          monthly: monthlyCounts(advisories, now),
         };
       } catch {
-        return { tool, total: 0, last90Days: 0, last365Days: 0, criticalOrHigh365: 0, latest: null, recent: [], error: true };
+        return { tool, total: 0, last90Days: 0, last365Days: 0, criticalOrHigh365: 0, latest: null, recent: [], monthly: [], error: true };
       }
     }),
   );
@@ -92,4 +107,4 @@ async function loadToolStatuses(): Promise<ToolStatus[]> {
 }
 
 /** Cached for 6 hours — OSV data changes slowly and this fans out ~40 requests. */
-export const getToolStatuses = unstable_cache(loadToolStatuses, ["tool-watch-v1"], { revalidate: 6 * 60 * 60 });
+export const getToolStatuses = unstable_cache(loadToolStatuses, ["tool-watch-v2"], { revalidate: 6 * 60 * 60 });

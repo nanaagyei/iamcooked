@@ -4,10 +4,10 @@ import Link from "next/link";
 import { ArrowRight, Upload, ShieldCheck } from "@phosphor-icons/react";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { Button } from "@/components/ui/button";
-import { RadarIllustration } from "@/components/ui/radar-illustration";
 import { SectionContainer } from "@/components/layout/SectionContainer";
 import { CopyCommand } from "@/components/check/CopyCommand";
-import { SplitText, Reveal, Parallax, GridBackground, GlowOrbs, Terminal, BorderBeam, TextShimmer, type TerminalLine } from "@/components/motion";
+import SplitFlapText from "@/components/kokonutui/split-flap-text";
+import { SplitText, Reveal, Parallax, Terminal, VantaNet, ScrambleText, type TerminalLine } from "@/components/motion";
 
 const DEMO: TerminalLine[] = [
   { kind: "cmd", text: "npx iamcooked" },
@@ -29,24 +29,18 @@ const DEMO: TerminalLine[] = [
 
 export function HomeHero() {
   return (
-    <section className="relative isolate overflow-hidden">
-      <Parallax speed={40} className="absolute inset-0 -z-10">
-        <GridBackground size={64} />
-      </Parallax>
-      <GlowOrbs className="-z-10" />
-      <Parallax speed={-25} className="pointer-events-none absolute inset-y-0 right-[-10%] -z-10 hidden w-[70%] opacity-50 [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)] lg:block dark:opacity-70">
-        <RadarIllustration variant="hero" seed="iamcooked-hero-radar" />
-      </Parallax>
+    <section className="relative isolate overflow-hidden border-b border-border/60">
+      <VantaNet className="-z-10 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" />
 
-      <SectionContainer size="wide" className="grid min-h-[100dvh] items-center gap-14 pb-20 pt-36 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:pt-32">
+      <SectionContainer size="wide" className="pointer-events-none grid min-h-[100dvh] items-center gap-14 pb-20 pt-36 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pt-32 [&_a]:pointer-events-auto [&_button]:pointer-events-auto">
         <div className="max-w-2xl">
           <Reveal blur={false} distance={10}>
             <Link
               href="/tools"
-              className="group inline-flex items-center gap-2 rounded-full border border-border bg-card/70 py-1 pl-1 pr-3 text-xs backdrop-blur transition-colors hover:border-foreground/25"
+              className="group inline-flex items-center gap-2 rounded-full border border-border bg-card py-1 pl-1 pr-3 text-xs transition-colors hover:border-primary/50"
             >
-              <span className="rounded-full bg-primary/15 px-2 py-0.5 font-medium text-primary">New</span>
-              <TextShimmer>Tool Watch: is your AI coding stack in a CVE?</TextShimmer>
+              <span className="rounded-full bg-primary px-2 py-0.5 font-medium text-primary-foreground">New</span>
+              <ScrambleText text="Tool Watch: is your AI stack in a CVE?" className="font-mono text-muted-foreground" />
               <ArrowRight className="h-3 w-3 text-muted-foreground transition-transform group-hover:translate-x-0.5" weight="bold" aria-hidden />
             </Link>
           </Reveal>
@@ -54,7 +48,7 @@ export function HomeHero() {
           <SplitText
             text="Your AI agent installed 247 packages. Are you cooked?"
             highlight={[8]}
-            className="mt-6 text-5xl font-semibold leading-[0.98] tracking-tighter sm:text-6xl lg:text-7xl"
+            className="mt-6 text-5xl font-semibold leading-[1.06] tracking-tight sm:text-6xl lg:text-[4.5rem]"
           />
 
           <Reveal delay={0.5}>
@@ -66,13 +60,13 @@ export function HomeHero() {
 
           <Reveal delay={0.65}>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <MagneticButton size="lg" className="h-12 px-6 shadow-[0_12px_40px_-12px_var(--primary)]" asChild>
+              <MagneticButton size="lg" className="h-12 px-6" asChild>
                 <Link href="/scan">
                   <Upload className="h-4 w-4" weight="bold" aria-hidden />
                   Am I cooked?
                 </Link>
               </MagneticButton>
-              <Button variant="outline" size="lg" className="h-12 px-6 backdrop-blur" asChild>
+              <Button variant="outline" size="lg" className="h-12 bg-card px-6" asChild>
                 <Link href="/mcp">
                   Check my MCP servers
                   <ArrowRight className="h-4 w-4" weight="bold" aria-hidden />
@@ -80,7 +74,7 @@ export function HomeHero() {
               </Button>
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <CopyCommand command="npx iamcooked" className="w-full max-w-[16rem] bg-card/70 backdrop-blur" />
+              <CopyCommand command="npx iamcooked" className="w-full max-w-[16rem] bg-card" />
               <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                 <ShieldCheck className="h-4 w-4 text-severity-safe" weight="bold" aria-hidden />
                 Free · open source · no signup
@@ -92,14 +86,15 @@ export function HomeHero() {
         <Reveal delay={0.35} direction="left" distance={40} className="relative">
           <Parallax speed={-12}>
             <div className="relative">
-              <div className="pointer-events-none absolute -inset-8 rounded-[2rem] bg-gradient-to-tr from-primary/25 via-amber-400/10 to-transparent blur-3xl" aria-hidden />
-              <div className="relative rounded-2xl">
-                <Terminal lines={DEMO} />
-                <BorderBeam duration={7} />
-              </div>
-              <div className="absolute -bottom-6 -left-4 hidden rounded-xl border border-border bg-card/90 px-4 py-3 shadow-xl backdrop-blur sm:block">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Scanned in</p>
-                <p className="text-xl font-semibold tabular-nums">1.8s</p>
+              <Terminal lines={DEMO} />
+              <div className="absolute -bottom-10 right-6 hidden rounded-xl border border-border bg-card p-3 shadow-xl sm:block">
+                <p className="mb-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Verdict board</p>
+                <SplitFlapText
+                  words={["NOT COOKED", "TOASTY", "WELL DONE", "BURNT"]}
+                  interval={2600}
+                  length={10}
+                  className="text-lg sm:text-lg"
+                />
               </div>
             </div>
           </Parallax>

@@ -4,7 +4,7 @@ import { GithubLogo, ShieldCheck, BellRinging, ClockCounterClockwise, Binoculars
 import { auth, signIn } from "@/lib/auth";
 import { MarketingLayout, SectionContainer } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { GlowOrbs, GridBackground, Parallax, Reveal, SplitText, BorderBeam, Stagger, StaggerItem } from "@/components/motion";
+import { GridBackground, Parallax, Reveal, SplitText, Stagger, StaggerItem } from "@/components/motion";
 
 const PERKS = [
   { icon: ClockCounterClockwise, text: "Keep every scan and compare over time" },
@@ -25,13 +25,12 @@ export default async function SignInPage() {
         <Parallax speed={30} className="absolute inset-0 -z-10">
           <GridBackground />
         </Parallax>
-        <GlowOrbs className="-z-10" />
         <SectionContainer className="grid min-h-[100dvh] items-center gap-14 pb-20 pt-32 lg:grid-cols-[1.1fr_1fr]">
           <div className="max-w-lg">
             <Reveal blur={false} distance={10}>
               <p className="font-mono text-xs uppercase tracking-widest text-primary">Your workspace</p>
             </Reveal>
-            <SplitText text="Save scans, watch your stack, and hear about it first." highlight={[6, 7]} className="mt-4 text-4xl font-semibold leading-[1.05] tracking-tighter sm:text-5xl" />
+            <SplitText text="Save scans, watch your stack, and hear about it first." highlight={[6, 7]} className="mt-4 text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl" />
             <Stagger as="ul" className="mt-10 space-y-4">
               {PERKS.map(({ icon: Icon, text }) => (
                 <StaggerItem as="li" key={text} className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -45,9 +44,8 @@ export default async function SignInPage() {
           </div>
 
           <Reveal delay={0.25} direction="left">
-            <div className="relative mx-auto w-full max-w-md rounded-3xl border border-border bg-card/80 p-8 shadow-[0_40px_120px_-40px_rgba(249,116,59,0.4)] backdrop-blur-xl">
-              <BorderBeam duration={8} />
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-amber-400 text-lg font-bold text-primary-foreground shadow-lg">
+            <div className="relative mx-auto w-full max-w-md rounded-3xl border border-border bg-card/80 p-8 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-lg font-bold text-primary-foreground">
                 ic
               </div>
               <h2 className="mt-6 text-center text-2xl font-semibold tracking-tight">Sign in to iamcooked</h2>

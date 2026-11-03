@@ -84,10 +84,10 @@ export function HowItWorks() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="font-mono text-xs uppercase tracking-widest text-primary">How it works</p>
-            <SplitText as="h2" onScroll text="From “is this bad?” to fixed, in one screen." className="mt-3 max-w-2xl text-3xl font-semibold tracking-tighter sm:text-5xl" />
+            <SplitText as="h2" onScroll text="From “is this bad?” to fixed, in one screen." className="mt-3 max-w-2xl text-3xl font-semibold tracking-tight sm:text-5xl" />
           </div>
           <div className="hidden h-1 w-48 overflow-hidden rounded-full bg-muted lg:block">
-            <div ref={bar} className="h-full origin-left scale-x-0 rounded-full bg-primary" />
+            <div ref={bar} className="h-full origin-left rounded-full bg-primary" style={{ transform: "scaleX(0)" }} />
           </div>
         </div>
       </SectionContainer>
@@ -99,7 +99,7 @@ export function HowItWorks() {
             data-step
             className="group relative flex min-h-[22rem] flex-col overflow-hidden rounded-3xl border border-border bg-card p-8 lg:w-[30rem]"
           >
-            <span data-num className="pointer-events-none absolute -right-4 -top-10 select-none text-[11rem] font-bold leading-none tracking-tighter text-foreground/[0.04]">
+            <span data-num className="pointer-events-none absolute -right-4 -top-10 select-none text-[11rem] font-bold leading-none tracking-tight text-foreground/[0.04]">
               {n}
             </span>
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">

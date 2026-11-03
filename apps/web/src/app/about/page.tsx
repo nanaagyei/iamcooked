@@ -54,7 +54,7 @@ export default function AboutPage() {
         <div className="grid gap-12 lg:grid-cols-[1fr_1.3fr] lg:items-start">
           <div className="lg:sticky lg:top-28">
             <p className="font-mono text-xs uppercase tracking-widest text-primary">The problem</p>
-            <SplitText as="h2" onScroll text="The information exists. Nobody reads it while shipping." className="mt-3 text-3xl font-semibold tracking-tighter sm:text-4xl" />
+            <SplitText as="h2" onScroll text="The information exists. Nobody reads it while shipping." className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl" />
           </div>
           <div className="space-y-6 text-lg leading-relaxed text-muted-foreground">
             <Reveal>
@@ -83,7 +83,7 @@ export default function AboutPage() {
       <section className="border-y border-border/60 bg-muted/20 py-24">
         <SectionContainer>
           <p className="font-mono text-xs uppercase tracking-widest text-primary">Principles</p>
-          <SplitText as="h2" onScroll text="Six rules we don't break." className="mt-3 text-3xl font-semibold tracking-tighter sm:text-4xl" />
+          <SplitText as="h2" onScroll text="Six rules we don't break." className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl" />
           <Stagger className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {PRINCIPLES.map((p, i) => (
               <StaggerItem key={p.title}>
@@ -104,7 +104,7 @@ export default function AboutPage() {
             <p className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-primary">
               <Heart className="h-3.5 w-3.5" weight="fill" aria-hidden /> Open source
             </p>
-            <SplitText as="h2" onScroll text="Built in public. Better with you." className="mt-3 text-3xl font-semibold tracking-tighter sm:text-4xl" />
+            <SplitText as="h2" onScroll text="Built in public. Better with you." className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl" />
             <Reveal delay={0.1}>
               <p className="mt-4 text-muted-foreground">
                 The CLI, the engine, the GitHub Action and this website are MIT-licensed. Run it locally in thirty

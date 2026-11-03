@@ -93,7 +93,6 @@ export function CookieConsent() {
           className="fixed bottom-4 left-4 right-4 z-[70] sm:right-auto sm:w-[26rem]"
         >
           <div className="relative overflow-hidden rounded-2xl border border-border bg-card/95 p-5 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-            <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/20 blur-3xl" aria-hidden />
             <div className="relative flex items-start gap-3">
               <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-muted">
                 <Cookie className="h-5 w-5 text-primary" weight="duotone" aria-hidden />

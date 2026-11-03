@@ -31,7 +31,7 @@ export function LearnContentCard({
             sizes="(max-width: 1024px) 100vw, 50vw"
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-card via-card/10 to-transparent lg:bg-gradient-to-r" />
+          <div className="absolute inset-0 bg-card/20" />
         </div>
         <div className="flex flex-col justify-center p-8 lg:p-10">
           <div className="flex flex-wrap items-center gap-2">
@@ -95,7 +95,7 @@ export function LearnContentCard({
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-card/80 to-transparent" />
+        <div className="absolute inset-0 bg-card/20" />
       </div>
       <div className="flex flex-1 flex-col p-6 lg:p-8">
         <div className="flex flex-wrap items-center gap-2">

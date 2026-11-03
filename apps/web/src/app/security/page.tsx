@@ -7,7 +7,7 @@ import {
   Sparkle,
   GitBranch,
 } from "@phosphor-icons/react/dist/ssr";
-import { GlowOrbs, Stagger, StaggerItem } from "@/components/motion";
+import { Stagger, StaggerItem } from "@/components/motion";
 import { MarketingLayout, PageHero, SectionContainer } from "@/components/layout";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 
@@ -213,7 +213,6 @@ export default function SecurityPage() {
             </Section>
 
             <div className="relative overflow-hidden rounded-2xl border border-border bg-card px-6 py-10 sm:px-10">
-              <GlowOrbs className="opacity-60" />
               <div className="relative z-10 max-w-lg">
                 <h3 className="text-xl font-semibold tracking-tight text-foreground">
                   See it on your own stack
