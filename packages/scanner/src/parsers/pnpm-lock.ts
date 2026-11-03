@@ -9,9 +9,13 @@ interface PnpmImporter {
   optionalDependencies?: DepMap;
 }
 
+type SnapshotDeps = { dependencies?: Record<string, string>; optionalDependencies?: Record<string, string> } | null;
+
 interface PnpmLockfile {
   lockfileVersion: string | number;
   packages?: Record<string, { dev?: boolean } | null>;
+  /** pnpm v9+: resolved dependency graph keyed by "name@version(peers)". */
+  snapshots?: Record<string, SnapshotDeps>;
   importers?: Record<string, PnpmImporter>;
   dependencies?: DepMap;
   devDependencies?: DepMap;
@@ -59,6 +63,38 @@ function collect(map: DepMap | undefined, into: Set<string>) {
   for (const name of Object.keys(map ?? {})) into.add(name);
 }
 
+function rootRefs(map: DepMap | undefined): string[] {
+  return Object.entries(map ?? {}).map(([name, v]) => `${name}@${typeof v === "string" ? v : v.version}`);
+}
+
+/**
+ * pnpm v9 dropped the per-package `dev` flag, so walk the snapshot graph from the production
+ * roots: anything not reachable from them is dev-only. Returns null when there's no graph.
+ */
+function prodReachable(data: PnpmLockfile): Set<string> | null {
+  if (!data.snapshots) return null;
+  const roots: string[] = [];
+  for (const imp of [data, ...Object.values(data.importers ?? {})]) {
+    roots.push(...rootRefs(imp.dependencies), ...rootRefs(imp.optionalDependencies));
+  }
+  const seen = new Set<string>();
+  const out = new Set<string>();
+  const stack = [...roots];
+  while (stack.length) {
+    const ref = stack.pop()!;
+    if (seen.has(ref)) continue;
+    seen.add(ref);
+    const parsed = parsePnpmPackageKey(ref);
+    if (parsed) out.add(`${parsed.name}@${parsed.version}`);
+    const snap = data.snapshots[ref];
+    for (const [name, v] of [...Object.entries(snap?.dependencies ?? {}), ...Object.entries(snap?.optionalDependencies ?? {})]) {
+      // values are either "1.2.3(peer@1)" or an alias "npm-name@1.2.3"
+      stack.push(/^\d/.test(v) ? `${name}@${v}` : v);
+    }
+  }
+  return out;
+}
+
 export function parsePnpmLock(raw: string): NormalizedDependency[] {
   let data: PnpmLockfile | null;
   try {
@@ -85,6 +121,7 @@ export function parsePnpmLock(raw: string): NormalizedDependency[] {
 
   const results: NormalizedDependency[] = [];
   const seen = new Set<string>();
+  const prod = prodReachable(data);
 
   for (const [key, meta] of Object.entries(data.packages)) {
     const parsed = parsePnpmPackageKey(key);
@@ -99,7 +136,9 @@ export function parsePnpmLock(raw: string): NormalizedDependency[] {
       name: parsed.name,
       version: parsed.version,
       direct: isDirect,
-      dev: meta?.dev === true || (devOnly.has(parsed.name) && !direct.has(parsed.name)) || undefined,
+      dev:
+        (prod ? !prod.has(id) : meta?.dev === true || (devOnly.has(parsed.name) && !direct.has(parsed.name))) ||
+        undefined,
       sourceFile: "",
     });
   }

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability in iamcooked
+    url: https://github.com/nanaagyei/iamcooked/security/advisories/new
+    about: Please report security issues privately.
+  - name: A package you use is vulnerable
+    url: https://osv.dev
+    about: iamcooked reports advisories from OSV and GitHub. Report the vulnerability upstream to the package or GitHub Advisories.

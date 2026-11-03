@@ -15,6 +15,7 @@
     "build": "node scripts/build.mjs",
     "dev": "tsx src/index.ts",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
     "test": "vitest run",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm build"

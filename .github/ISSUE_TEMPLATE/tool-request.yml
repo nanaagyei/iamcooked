@@ -1,0 +1,27 @@
+name: Add a tool to Tool Watch
+description: Track CVEs for an AI agent, MCP server, SDK or framework
+labels: ["tool-watch", "good first issue"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Tool name
+      placeholder: "Cline"
+    validations: { required: true }
+  - type: input
+    id: package
+    attributes:
+      label: Registry and package name
+      description: The exact npm / PyPI / crates.io / Go package name (that's what OSV tracks).
+      placeholder: "npm: cline"
+    validations: { required: true }
+  - type: input
+    id: homepage
+    attributes:
+      label: Homepage or repo
+  - type: checkboxes
+    id: pr
+    attributes:
+      label: Want to add it yourself?
+      options:
+        - label: I'll open a PR. It's one entry in `packages/core/src/tools.ts` (see CONTRIBUTING.md).

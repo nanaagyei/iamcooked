@@ -177,7 +177,7 @@ export async function run(argv: string[]): Promise<number> {
 
   // GitHub Actions: add a job summary automatically
   const summaryFile = process.env["GITHUB_STEP_SUMMARY"];
-  if (summaryFile && opts.format !== "markdown") {
+  if (summaryFile && opts.format === "text") {
     try {
       writeFileSync(summaryFile, renderMarkdown(report, { showDev: opts.showDev }), { flag: "a" });
     } catch {

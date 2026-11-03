@@ -1,0 +1,57 @@
+name: "iamcooked"
+description: "Am I cooked? Check lockfiles and MCP configs for CVEs and malware, with plain-English fixes."
+author: "iamcooked contributors"
+branding:
+  icon: "shield"
+  color: "orange"
+
+inputs:
+  path:
+    description: "Directory (or lockfile) to scan."
+    default: "."
+  fail-on:
+    description: "Fail the job at or above this level: none | any | low | medium | high | critical. Malware always counts as critical."
+    default: "high"
+  prod-only:
+    description: "Ignore dev-only dependencies (malware is always reported)."
+    default: "false"
+  sarif:
+    description: "Path to write a SARIF report for GitHub code scanning (empty to skip)."
+    default: ""
+  version:
+    description: "iamcooked CLI version from npm."
+    default: "latest"
+
+outputs:
+  exit-code:
+    description: "0 = clean, 1 = findings at or above fail-on, 2 = error."
+    value: ${{ steps.scan.outputs.exit-code }}
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - id: scan
+      shell: bash
+      env:
+        IC_PATH: ${{ inputs.path }}
+        IC_FAIL_ON: ${{ inputs.fail-on }}
+        IC_PROD: ${{ inputs.prod-only }}
+        IC_SARIF: ${{ inputs.sarif }}
+        IC_VERSION: ${{ inputs.version }}
+      run: |
+        common=("$IC_PATH" --quiet)
+        if [ "$IC_PROD" = "true" ]; then common+=(--prod); fi
+        set +e
+        # Human-readable report in the log (a Markdown job summary is added automatically)
+        npx --yes "iamcooked@${IC_VERSION}" "${common[@]}" --fail-on "$IC_FAIL_ON"
+        code=$?
+        if [ -n "$IC_SARIF" ]; then
+          npx --yes "iamcooked@${IC_VERSION}" "${common[@]}" --format sarif -o "$IC_SARIF"
+        fi
+        set -e
+        echo "exit-code=$code" >> "$GITHUB_OUTPUT"
+        exit $code

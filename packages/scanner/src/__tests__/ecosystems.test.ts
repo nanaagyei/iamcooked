@@ -41,12 +41,29 @@ packages:
     resolution: {integrity: sha512-y}
   picocolors@1.1.0:
     resolution: {integrity: sha512-z}
+  tinypool@1.1.1:
+    resolution: {integrity: sha512-w}
+snapshots:
+  next@15.1.0(react@19.0.0):
+    dependencies:
+      picocolors: 1.1.0
+  vitest@3.0.0:
+    dependencies:
+      tinypool: 1.1.1
+      picocolors: 1.1.0
+  picocolors@1.1.0: {}
+  tinypool@1.1.1: {}
 `;
     const list = deps("pnpm-lock.yaml", raw);
-    expect(list).toHaveLength(3);
+    expect(list).toHaveLength(4);
     expect(find(list, "next")).toMatchObject({ version: "15.1.0", direct: true });
+    expect(find(list, "next")!.dev).toBeUndefined();
     expect(find(list, "vitest")).toMatchObject({ direct: true, dev: true });
+    // reachable from prod (via next) → not dev, even though vitest also uses it
     expect(find(list, "picocolors")).toMatchObject({ direct: false });
+    expect(find(list, "picocolors")!.dev).toBeUndefined();
+    // only reachable from a devDependency → dev-only
+    expect(find(list, "tinypool")).toMatchObject({ direct: false, dev: true });
   });
 });
 

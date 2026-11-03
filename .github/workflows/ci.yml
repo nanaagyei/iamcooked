@@ -5,8 +5,39 @@ on:
     branches: [main, master]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  quality:
+  cli:
+    name: CLI + engine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm --filter @iamcooked/core --filter @iamcooked/scanner --filter iamcooked typecheck
+      - name: Unit tests
+        run: pnpm --filter @iamcooked/core --filter @iamcooked/scanner --filter iamcooked test
+      - name: Build CLI
+        run: pnpm --filter iamcooked build
+      - name: Smoke test CLI
+        run: |
+          node packages/cli/dist/iamcooked.mjs --version
+          node packages/cli/dist/iamcooked.mjs --help > /dev/null
+      # Dogfooding: iamcooked scans itself. Fails on critical production issues or malware.
+      - name: Am I cooked?
+        run: node packages/cli/dist/iamcooked.mjs . --prod --fail-on critical
+
+  web:
+    name: Web app
     runs-on: ubuntu-latest
     services:
       postgres:

@@ -1,0 +1,26 @@
+name: Wrong verdict (false positive / false negative)
+description: iamcooked missed a vulnerable package, or flagged one that isn't affected
+labels: ["accuracy", "triage"]
+body:
+  - type: input
+    id: package
+    attributes:
+      label: Package and version
+      placeholder: "npm: next@14.2.3"
+    validations: { required: true }
+  - type: input
+    id: advisory
+    attributes:
+      label: Advisory
+      placeholder: "GHSA-…, CVE-…, or a link"
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type
+      options: [Missed a real vulnerability (false negative), Flagged something not affected (false positive), Wrong fix version or command, Wrong severity]
+    validations: { required: true }
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Lockfile excerpt showing the package entry helps a lot.

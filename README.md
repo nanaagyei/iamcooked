@@ -1,299 +1,182 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js" alt="Next.js 15">
-  <img src="https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Prisma-6.x-2D3748?style=flat-square&logo=prisma" alt="Prisma">
-  <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/Tailwind-4.x-06B6D4?style=flat-square&logo=tailwindcss" alt="Tailwind">
-  <img src="https://img.shields.io/badge/pnpm-10-orange?style=flat-square&logo=pnpm" alt="pnpm">
-  <img src="https://img.shields.io/badge/Turborepo-2.x-EF4444?style=flat-square&logo=turborepo" alt="Turborepo">
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License">
-</p>
-
 <h1 align="center">iamcooked</h1>
 
 <p align="center">
   <strong>Your AI agent installed 247 packages. Are you cooked?</strong>
   <br>
-  The dependency vibe check for people who ship fast — turn CVEs, supply-chain attacks, and package compromises into plain-English briefs and a clear "am I cooked?" verdict.
+  Find out when your dependencies, your MCP servers, and the AI coding tools themselves are hit by a CVE or a malicious release. You get it in plain English, with the exact command to fix it.
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> ·
-  <a href="#quick-start">Quick Start</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#what-it-checks">What it checks</a> ·
+  <a href="#use-it-in-ci">CI</a> ·
+  <a href="#the-web-app">Web app</a> ·
   <a href="#architecture">Architecture</a> ·
-  <a href="#project-structure">Structure</a> ·
-  <a href="#api">API</a> ·
-  <a href="#contributing">Contributing</a>
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT license">
+  <img src="https://img.shields.io/badge/data-OSV.dev%20%C2%B7%20GitHub%20Advisories%20%C2%B7%20CISA%20KEV-orange?style=flat-square" alt="Data sources">
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square" alt="PRs welcome">
 </p>
 
 ---
 
-## Why iamcooked?
+## Why
 
-Modern builders ship fast with AI coding tools — Cursor, Claude, ChatGPT, Bolt, Lovable. Those agents install packages, wire up auth, and generate production code. But many builders don't know when those dependencies become risky.
+Vibecoding moved the attack surface. Your agent picks packages you never reviewed, wires up MCP servers by
+pasting `npx -y some-server` into a config, and the agent CLIs themselves ship CVEs every few weeks. The
+information exists, scattered across OSV, GitHub Advisories, CISA, vendor blogs and Reddit, but nobody
+reads CVE feeds while shipping.
 
-iamcooked bridges that gap. Instead of reading scattered CVE feeds, GitHub advisories, Reddit threads, and vendor blogs, iamcooked answers:
+iamcooked answers four questions:
 
-- **What happened?**
-- **Does my project use the affected package?**
-- **How urgent is this?**
-- **What should I do next?**
+1. **Am I affected?** Exact package + version matching across your whole repo, not "you use lodash somewhere".
+2. **How bad is it?** Real CVSS scores, actively-exploited (CISA KEV) and known-malware flags, dev vs. prod.
+3. **What do I run?** The fix command for *your* package manager, on *your* release line.
+4. **Will I hear about the next one?** Tool Watch, watchlist emails, and a daily CI job.
 
-## Core Promise
-
-> Paste your lockfile. We'll tell you — in plain English — whether you're cooked, and exactly what to fix first.
-
-## Features
-
-- **"Am I cooked?" verdict** — A single playful cooked-meter (`not cooked` → `getting toasty` → `burnt to a crisp`) layered over the real risk score
-- **Agent Sources** — Track what each AI coding session (Cursor, Claude Code, Lovable, Replit, v0, Windsurf, Bolt) actually installed, and flag the packages nobody ever reviewed
-- **Workspace dashboard** — Persistent-sidebar app shell with Overview, Agent Sources, Projects, Dependencies, and Vulnerabilities views
-- **Vulnerability triage** — Package, CVE, reachability, affected projects, and status (Open / In progress / Done) with expandable rows
-- **Dependency inventory** — Searchable master-detail of every package: severity, reachability, fix availability, who depends on it, and one-click "Create fix task"
-- **Incident Feed** — Curated, source-backed security incidents with severity, confidence, and beginner-friendly summaries
-- **Lockfile Scanner** — Upload `package-lock.json`, `pnpm-lock.yaml`, or `yarn.lock` to check dependencies against known vulnerabilities
-- **AI-Powered Summaries** — Structured, Zod-validated LLM output for incident extraction, beginner TLDRs, technical summaries, and remediation plans
-- **Newsletter Digest** — Weekly security briefs with critical alerts when your packages are affected
-- **Every Claim Source-Backed** — Confidence labels on all content. AI never invents facts; the cooked verdict is always backed by OSV / GitHub Advisories / CISA KEV.
-
-## Quick Start
-
-### Prerequisites
-
-- **Node.js** ≥ 20
-- **pnpm** ≥ 10
-- **Docker** (for local PostgreSQL)
-
-### Setup
+## Quick start
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/iamcooked.git
-cd iamcooked
+npx iamcooked            # scan every lockfile in this repo + project MCP configs
+npx iamcooked mcp        # check every MCP config on this machine (Cursor, Claude, Windsurf, VS Code…)
+npx iamcooked tools      # check installed AI agents (Claude Code, Codex, Gemini CLI, Aider) + global packages
+npx iamcooked doctor     # all of the above
+```
 
-# Install dependencies
+```
+  WELL DONE  risk 60/100
+  Some serious findings are live. Worth a focused afternoon of patching.
+  5 critical · 31 high · 53 medium advisories across 7 packages
+
+  Fix these first
+
+  CRITICAL  mcp-remote 0.1.10 → 0.1.16  npm
+            mcp-remote exposed to OS command injection via untrusted MCP server connections
+            you depend on it directly · used by MCP server linear
+            CVE-2025-6514 · GHSA-6xpm-ggf7-wc3p  https://github.com/advisories/GHSA-6xpm-ggf7-wc3p
+            → In your MCP config, change "mcp-remote@0.1.10" to "mcp-remote@0.1.16" and restart your editor.
+            in .cursor/mcp.json
+
+  CRITICAL  next 14.1.0 → 14.2.25  npm
+            Authorization Bypass in Next.js Middleware
+            you depend on it directly
+            CVE-2025-29927 · GHSA-f82v-jwr5-mffw  https://github.com/advisories/GHSA-f82v-jwr5-mffw
+            $ pnpm add next@^14.2.25
+```
+
+No account, no API key, zero runtime dependencies. Only package names and versions leave your machine.
+Full CLI docs: [`packages/cli/README.md`](packages/cli/README.md).
+
+## What it checks
+
+| | |
+|---|---|
+| **JavaScript / TypeScript** | `package-lock.json`, `pnpm-lock.yaml` (v5–v9), `yarn.lock` (v1 + Berry), `bun.lock` |
+| **Python** | `requirements*.txt`, `poetry.lock`, `uv.lock`, `Pipfile.lock` |
+| **Go** | `go.mod`, including **Go standard-library** CVEs from your `go`/`toolchain` line |
+| **Rust · Ruby · PHP** | `Cargo.lock` · `Gemfile.lock` · `composer.lock` |
+| **MCP configs** | Vulnerable/malicious server packages, hard-coded API keys, unpinned `npx -y` installs, plain-HTTP remotes, whole-disk filesystem access, `curl \| sh` launchers |
+| **AI tools** | Claude Code, Codex CLI, Gemini CLI, Aider, MCP SDKs, LangChain, LiteLLM, Next.js, Supabase and ~40 more in [Tool Watch](packages/core/src/tools.ts) |
+
+**Data sources:** [OSV.dev](https://osv.dev) (aggregating GitHub Advisories, PyPA, Go, RustSec, RubySec and
+the [OpenSSF malicious-packages](https://github.com/ossf/malicious-packages) feed) and
+[CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog). Severities come from the advisory,
+never from an LLM.
+
+## Use it in CI
+
+```yaml
+# .github/workflows/iamcooked.yml
+on: [pull_request]
+jobs:
+  iamcooked:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nanaagyei/iamcooked@main
+        with:
+          fail-on: high       # malware always fails
+          prod-only: "true"   # ignore dev-only deps
+```
+
+You get a plain-English job summary on every run. Add `sarif: iamcooked.sarif` plus
+`github/codeql-action/upload-sarif` to see findings in the Security tab. There's a full example in
+[`.github/workflows/iamcooked-example.yml.sample`](.github/workflows/iamcooked-example.yml.sample).
+Outside GitHub, use `npx iamcooked --ci` (exit 1 on high/critical) or `--format json|markdown|sarif`.
+
+## The web app
+
+For people who'd rather not touch a terminal, and for staying informed over time:
+
+- **Scan**: drop a lockfile and get a shareable risk report with fix commands and an AI remediation plan.
+- **Tool Watch** (`/tools`): live CVE status for the AI coding stack. Check your version in one click.
+- **MCP check** (`/mcp`): paste a config. It's analysed in the browser, so secrets never leave the tab.
+- **Watchlist + alerts**: watch any package or tool and get an email the day a new advisory is published.
+- **Incidents + Learn**: curated, source-backed briefs on supply-chain attacks, written for beginners.
+- **Dashboard**: projects, dependencies, vulnerability triage, and which agent session installed what.
+
+### Running it locally
+
+Prerequisites: Node.js ≥ 20, pnpm ≥ 10, Docker.
+
+```bash
+git clone https://github.com/nanaagyei/iamcooked.git && cd iamcooked
 pnpm install
-
-# Start PostgreSQL
+cp .env.example apps/web/.env.local && cp .env.example packages/db/.env
 docker compose up -d
-
-# Push database schema
-pnpm --filter @iamcooked/db db:push
-
-# Seed with sample incidents
-pnpm --filter @iamcooked/db db:seed
-
-# Start the dev server
-pnpm dev
+pnpm --filter @iamcooked/db db:push && pnpm --filter @iamcooked/db db:seed
+pnpm dev   # http://localhost:3000
 ```
 
-Visit `http://localhost:3000`.
-
-### Environment Variables
-
-Copy `.env.example` to `apps/web/.env.local` and `packages/db/.env`:
-
-```bash
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/iamcooked_dev"
-OPENAI_API_KEY="sk-..."           # Optional — for AI summaries
-ANTHROPIC_API_KEY="sk-ant-..."    # Optional — alternative AI provider
-GITHUB_TOKEN="ghp_..."            # Optional — for GitHub Advisory enrichment
-RESEND_API_KEY="re_..."           # Optional — for email digests
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-OSV_API_BASE_URL="https://api.osv.dev"
-```
-
-### Quality Gates
-
-```bash
-pnpm typecheck   # TypeScript strict mode across all packages
-pnpm lint        # ESLint flat config
-pnpm build       # Next.js production build
-pnpm test        # Vitest (scanner + AI packages)
-```
+Everything optional degrades gracefully: without `OPENAI_API_KEY`/`ANTHROPIC_API_KEY` AI summaries are
+off, without `RESEND_API_KEY` emails are skipped, without `GITHUB_TOKEN` GitHub enrichment is skipped.
+Scheduled jobs call `/api/cron/digest?type=weekly|critical|advisories` with `Authorization: Bearer $CRON_SECRET`.
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                    apps/web                       │
-│              Next.js 15 · App Router              │
-│    Tailwind 4 · shadcn/ui · TanStack Query       │
-├─────────────────────────────────────────────────┤
-│  Dashboard (persistent sidebar shell):           │
-│  /dashboard (Overview) · /dashboard/agents        │
-│  /dashboard/projects · /dashboard/dependencies    │
-│  /dashboard/vulnerabilities                        │
-│  Marketing: / · /incidents · /scan · /learn        │
-│  API routes  │  Server Components                 │
-└──────────────┬──────────────────────────────────┘
-               │
-    ┌──────────┼──────────┬──────────┬──────────┐
-    │          │          │          │          │
-┌───▼──┐ ┌────▼───┐ ┌───▼───┐ ┌───▼───┐ ┌────▼───┐
-│  db  │ │scanner │ │  ai   │ │sources│ │valida- │
-│Prisma│ │npm/yarn│ │OpenAI │ │ OSV   │ │ tors   │
-│ PG   │ │ /pnpm  │ │Anthro-│ │ CISA  │ │ zod    │
-│      │ │ parser │ │ pic   │ │ KEV   │ │schemas │
-└──────┘ └────────┘ └───────┘ └───────┘ └────────┘
+packages/scanner   lockfile + MCP config parsers        pure TS, also runs in the browser
+packages/core      OSV client · CVSS · fix selection    zero dependencies, shared by CLI + web
+                   scoring · verdict · Tool Watch list
+packages/cli       npx iamcooked                        bundled to one file with esbuild
+apps/web           Next.js 15 app + API routes          Tailwind 4, shadcn/ui, Prisma, Auth.js
+packages/sources   DB-backed jobs                       digests, watchlist alerts, KEV, GitHub enrichment
+packages/ai        structured LLM pipelines             Zod-validated, never the source of facts
+packages/db        Prisma schema + seed                 PostgreSQL 16
 ```
 
-## Project Structure
+Design notes and product specs live in [`docs/specs`](docs/specs); implementation history is in
+[`docs/specs/IMPLEMENTATION_STATUS.md`](docs/specs/IMPLEMENTATION_STATUS.md).
 
-```
-iamcooked/
-├── apps/
-│   ├── web/                    # Next.js 15 frontend + API routes
-│   │   └── src/
-│   │       ├── app/            # Pages + API routes
-│   │       ├── components/     # App-specific UI (re-exports @iamcooked/ui)
-│   │       └── lib/            # Queries, scoring, auth, admin warnings
-│   └── worker/                 # CLI digest runner (cron uses /api/cron/digest on Vercel)
-├── packages/
-│   ├── ai/                     # AI provider abstraction, prompt templates, Zod schemas
-│   ├── db/                     # Prisma schema, client, seed script
-│   ├── scanner/                # Lockfile parsers (npm, pnpm, yarn)
-│   ├── sources/                # OSV, CISA KEV, email digests
-│   ├── ui/                     # Shared badges, feedback, layout primitives
-│   └── validators/             # Zod schemas (env, scan, newsletter)
-├── docs/                       # Specifications, QA report, agent instructions
-├── IMPLEMENTATION_STATUS.md    # Phase status and launch checklist
-├── docker-compose.yml          # PostgreSQL 16
-├── turbo.json                  # Turborepo pipeline
-├── pnpm-workspace.yaml         # Workspace config
-└── tsconfig.base.json          # Shared TypeScript config
-```
+## Principles
 
-## API
+- **Source-backed.** Every finding links to an advisory. AI summarises; it never decides severity.
+- **Beginner-first.** Plain English first, technical depth one click away.
+- **Actionable.** Every finding ends in a command or a concrete next step.
+- **Private by default.** Only names and versions are sent anywhere; MCP configs are analysed locally.
+- **No panic.** Calm, precise copy. Being "cooked" is fixable.
 
-| Endpoint | Method | Description |
-|---|---|---|
-| `/api/incidents` | `GET` | List published incidents (filterable) |
-| `/api/incidents/:slug` | `GET` | Single incident by slug |
-| `/api/scan/upload` | `POST` | Upload and scan a lockfile |
-| `/api/scan/report/:id` | `GET` | Retrieve a scan report (token or session) |
-| `/api/scan/claim` | `POST` | Claim anonymous scans after sign-in |
-| `/api/scan/history` | `GET` | User scan history |
-| `/api/ai/generate` | `POST` | Admin AI workflows |
-| `/api/ai/remediation` | `POST` | On-demand scan remediation |
-| `/api/copilot/chat` | `POST` | Security copilot |
-| `/api/admin/incidents/*` | `GET/POST/PATCH` | Admin incident management |
-| `/api/watchlist` | `GET/POST/DELETE` | Watched packages |
-| `/api/newsletter/subscribe` | `POST` | Subscribe to digest |
-| `/api/newsletter/unsubscribe` | `GET` | Unsubscribe |
-| `/api/user/preferences` | `GET/PATCH` | Digest preferences |
-| `/api/cron/digest` | `GET` | Weekly/critical digest cron |
+## Roadmap
 
-### Scan Upload
+Ideas we'd love help with. See [CONTRIBUTING.md](CONTRIBUTING.md):
 
-```bash
-curl -X POST http://localhost:3000/api/scan/upload \
-  -F "file=@package-lock.json"
-```
-
-**Response:**
-```json
-{
-  "scanReportId": "clx...",
-  "riskLevel": "MEDIUM",
-  "riskScore": 45,
-  "findingCount": 3,
-  "ecosystem": "NPM",
-  "dependencyCount": 247
-}
-```
-
-### Error Shape
-
-All errors follow the same structure:
-
-```json
-{
-  "error": {
-    "code": "FILE_TOO_LARGE",
-    "message": "File size exceeds the 10MB limit."
-  }
-}
-```
-
-## Data Sources
-
-| Source | Tier | Usage |
-|---|---|---|
-| [OSV](https://osv.dev) | 1 — Authoritative | Package vulnerability matching |
-| [GitHub Advisory Database](https://github.com/advisories) | 1 — Authoritative | Advisory lookup, CVE/GHSA references |
-| [CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) | 1 — Authoritative | Known exploitation detection |
-| Vendor Blogs | 2 — Research | Incident context, timelines |
-| Community Posts | 3 — Signal only | Never treated as confirmed without corroboration |
-
-## Design Principles
-
-- **Source-backed.** Every claim traces to an advisory, article, or maintainer statement.
-- **Beginner-first.** Plain English before technical depth. Jargon explained inline.
-- **Label uncertainty.** Every incident shows Confirmed / Likely / Developing / Unverified / Disputed.
-- **No panic.** Risk information is calm, precise, and actionable — never fear-driven.
-- **AI is a summarizer, not a source.** LLM output is always validated and never published unreviewed.
+- [ ] More ecosystems: Maven/Gradle, NuGet, Swift, Dart/Pub
+- [ ] VS Code / Cursor extension CVE tracking (extensions aren't in OSV yet)
+- [ ] Reachability hints: is the vulnerable function actually imported?
+- [ ] Slopsquatting checks: flag packages that don't exist or were published days ago
+- [ ] `iamcooked fix`: apply safe patch/minor upgrades automatically
+- [ ] Codex `config.toml` and other TOML-based MCP configs
+- [ ] Slack/Discord alert channels
 
 ## Contributing
 
-We welcome contributions. Here's how to get started:
-
-1. **Read the docs.** Start with [`docs/PRODUCT_BRIEF.md`](docs/PRODUCT_BRIEF.md) and [`IMPLEMENTATION_STATUS.md`](IMPLEMENTATION_STATUS.md).
-2. **Find an issue.** Check open issues or the implementation status for gaps.
-3. **Follow the conventions.**
-   - TypeScript strict mode everywhere
-   - shadcn/ui components with the dark-first design system
-   - Zod validation on all API inputs and AI outputs
-   - ESLint flat config (run `pnpm lint` before committing)
-4. **Open a PR.** Include a description, screenshots if UI changes, and verify `pnpm build` passes.
-
-### Development Workflow
-
-```bash
-# Run dev server with Turbopack
-pnpm dev
-
-# Type-check all packages
-pnpm typecheck
-
-# Lint all packages
-pnpm lint
-
-# Run tests
-pnpm test
-
-# Run E2E tests (starts dev server)
-pnpm --filter @iamcooked/web test:e2e
-
-# Build for production
-pnpm build
-
-# Format code
-pnpm format
-```
-
-### Database
-
-```bash
-# Start PostgreSQL
-docker compose up -d
-
-# Push schema changes
-pnpm --filter @iamcooked/db db:push
-
-# Re-seed sample data
-pnpm --filter @iamcooked/db db:seed
-
-# Open Prisma Studio
-pnpm --filter @iamcooked/db db:studio
-```
+Contributions of every size are welcome. Adding a tool to Tool Watch is a one-line PR. Start with
+[CONTRIBUTING.md](CONTRIBUTING.md). Please read the [Code of Conduct](CODE_OF_CONDUCT.md), and report
+security issues privately per [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT © iamcooked
-
----
-
-<p align="center">
-  <sub>Built with TypeScript, Next.js, Prisma, and PostgreSQL. Designed for clarity, built for trust.</sub>
-</p>
+[MIT](LICENSE)
