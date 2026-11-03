@@ -57,6 +57,6 @@ test.describe("auth gates", () => {
 test.describe("newsletter", () => {
   test("subscribe form is present on homepage", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByPlaceholder(/email/i).first()).toBeVisible();
+    await expect(page.getByRole("textbox", { name: /email address/i }).first()).toBeVisible();
   });
 });

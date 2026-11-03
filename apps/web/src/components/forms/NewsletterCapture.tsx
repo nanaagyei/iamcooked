@@ -108,6 +108,7 @@ export function NewsletterCapture({ variant = "hero", onImage = false, onSuccess
           <Input
             type="email"
             placeholder="you@company.com"
+            aria-label="Email address"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
@@ -140,6 +141,7 @@ export function NewsletterCapture({ variant = "hero", onImage = false, onSuccess
           <Input
             type="email"
             placeholder="you@company.com"
+            aria-label="Email address"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
@@ -185,6 +187,7 @@ export function NewsletterCapture({ variant = "hero", onImage = false, onSuccess
         <Input
           type="email"
           placeholder="you@company.com"
+            aria-label="Email address"
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
