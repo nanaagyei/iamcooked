@@ -88,7 +88,7 @@ describe("lockfile parsers", () => {
   });
 
   it("rejects unsupported files", () => {
-    const result = parseLockfile("Gemfile.lock", "foo");
+    const result = parseLockfile("build.gradle", "foo");
     expect("message" in result).toBe(true);
   });
 

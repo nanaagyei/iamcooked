@@ -10,7 +10,7 @@ describe("rate-limit in-memory fallback", () => {
 
   afterEach(() => {
     process.env.VERCEL_ENV = originalVercelEnv;
-    process.env.NODE_ENV = originalNodeEnv;
+    (process.env as Record<string, string | undefined>).NODE_ENV = originalNodeEnv;
     process.env.RATE_LIMIT_ALLOW_MEMORY = originalAllowMemory;
     process.env.VERCEL = originalVercel;
     process.env.TRUST_PROXY = originalTrustProxy;
