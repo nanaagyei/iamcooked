@@ -21,6 +21,6 @@
   "devDependencies": {
     "@iamcooked/validators": "workspace:*",
     "prisma": "^6.2.0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.23.15"
   }
 }
